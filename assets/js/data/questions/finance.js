@@ -163,7 +163,8 @@ export const finance1 = [
       const i = annual / 100 / 12;
       const n = years * 12;
       const factor = (1 - (1 + i) ** -n) / i;
-      const d = round(P / factor, 6);
+      const d = round(P / factor, 2);   // the repayment as actually quoted
+      const totalRepaid = round(d * n, 2);
       return {
         prompt: `<p>${ctx.charAt(0).toUpperCase() + ctx.slice(1)} of <strong>${money(P, 0)}</strong> is taken at <strong>${tidy(annual)}% p.a.</strong> compounded monthly and is to be fully repaid with equal monthly repayments over <strong>${years} years</strong>.</p>
                  <p class="mb-0">Determine the monthly repayment.</p>`,
@@ -178,7 +179,7 @@ export const finance1 = [
                 <p class="mb-0">The bracketed factor evaluates to ${math(tidy(factor, 6))}.</p>` },
           { t: 'Substitute and round up to the cent',
             h: `<p class="mb-0">${math(`d <span class="op">=</span> ${frac(tidy(P), tidy(factor, 6))} <span class="op">=</span> ${money(d)}`, `d equals ${P} over ${round(factor, 6)} equals ${round(d, 2)}`)} per month</p>
-                <p class="text-muted mb-0">Total repaid ${math(`<span class="op">=</span> ${n} <span class="op">×</span> ${money(d)} <span class="op">=</span> ${money(d * n)}`)}, so interest paid is ${money(d * n - P)}.</p>` }
+                <p class="text-muted mb-0">Total repaid ${math(`<span class="op">=</span> ${n} <span class="op">×</span> ${money(d)} <span class="op">=</span> ${money(totalRepaid)}`)}, so interest paid is ${money(round(totalRepaid - P, 2))}.</p>` }
         ],
         answer: `Monthly repayment ≈ ${money(d)}.`,
         pitfall: 'Note the negative exponent −n. Using +n gives a value that looks plausible but is wrong.',
@@ -393,7 +394,7 @@ export const finance2 = [
       const i = annual / 100 / 12;
       const n = years * 12;
       const factor = ((1 + i) ** n - 1) / i;
-      const d = round(target / factor, 6);
+      const d = round(target / factor, 2);   // the deposit as actually quoted
       const contrib = round(d * n, 2);
       return {
         prompt: `<p>A saver wants <strong>${money(target, 0)}</strong> for ${ctx} in <strong>${years} years</strong>. The account pays <strong>${tidy(annual)}% p.a.</strong> compounded monthly and deposits are made at the end of each month.</p>
