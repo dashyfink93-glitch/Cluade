@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>General Maths Hub — QCAA General Mathematics Units 3 & 4</title>
+<meta name="description" content="Free study site for QCAA General Mathematics Units 3 and 4: ten topics explained, a random question generator, and step-by-step solutions keyed to the official formula book.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="General Maths Hub — QCAA General Mathematics Units 3 & 4">
+<meta property="og:description" content="Free study site for QCAA General Mathematics Units 3 and 4: ten topics explained, a random question generator, and step-by-step solutions keyed to the official formula book.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#8721;</text></svg>">
+<script>(function(){try{var d=JSON.parse(localStorage.getItem("gm-hub:v1")||"{}");if(d.theme==="dark"||d.theme==="light")document.documentElement.setAttribute("data-theme",d.theme);}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true">∑</span>
+      <span>General Maths Hub
+        <span class="brand__sub">QCAA Units 3 &amp; 4</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="topics.html">Learn</a>
+      <a href="practice.html">Practise</a>
+      <a href="formulas.html">Formula sheet</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <p class="eyebrow">QCAA General Mathematics &middot; Units 3 &amp; 4</p>
+        <h1>Learn the method, not just the answer.</h1>
+        <p class="lead">Ten syllabus topics explained plainly, an endless supply of practice questions,
+          and every solution broken into numbered steps that name the formula-book entry it uses.
+          Free, open, and works on any device.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="practice.html">Generate a question</a>
+          <a class="btn btn--ghost" href="topics.html">Browse the topics</a>
+        </div>
+        <p class="text-muted mt-3 mb-0"><small>No sign-up. Nothing is sent anywhere &mdash; your progress stays in your own browser.</small></p>
+      </div>
+      <div class="card card--pad-lg">
+        <h2 class="mb-2" style="font-size:1rem">Your progress</h2>
+        <div class="stat-row mb-2">
+          <div class="stat"><div class="stat__value" id="stat-skills">0</div><div class="stat__label">Skills ticked</div></div>
+          <div class="stat"><div class="stat__value" id="stat-attempted">0</div><div class="stat__label">Attempted</div></div>
+          <div class="stat"><div class="stat__value" id="stat-accuracy">&ndash;</div><div class="stat__label">Accuracy</div></div>
+        </div>
+        <div class="progress" role="img" aria-label="Mastery targets ticked across all topics">
+          <div class="progress__bar" id="progress-bar"></div>
+        </div>
+        <p class="text-muted mt-2 mb-0"><small id="progress-label">Tick mastery targets as you go &mdash; they are saved on this device.</small></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <h2>The ten topics</h2>
+      <p class="lead text-muted" style="max-width:64ch">Every topic follows the same shape: the big idea, the skills you
+        need to be able to do unaided, the core knowledge in plain language, the formula bank, a fully worked example,
+        and the errors that most often cost marks.</p>
+      <div class="grid grid--3 mt-3" id="topic-grid"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>How the questions work</h2>
+      <div class="grid grid--3 mt-3">
+        <div class="card">
+          <h3>Generated, not recycled</h3>
+          <p class="text-muted mb-0">Every question is built fresh from a template with new numbers and a new context,
+            so you can practise the same skill twenty times without memorising an answer.</p>
+        </div>
+        <div class="card">
+          <h3>Steps that name the formula</h3>
+          <p class="text-muted mb-0">Each step shows the substitution and links to the exact QCAA formula-book entry
+            it comes from &mdash; the same sheet you are given in the exam.</p>
+        </div>
+        <div class="card">
+          <h3>The pitfall, spelled out</h3>
+          <p class="text-muted mb-0">Every solution ends with the specific error that loses marks on that question type,
+            drawn from the common-error lists for each topic.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <h2>A study cycle that works</h2>
+      <p class="lead text-muted" style="max-width:60ch">Reading a worked example feels productive and teaches very little.
+        This six-step cycle forces retrieval, which is what actually builds recall.</p>
+      <ol class="howto mt-3" id="study-cycle"></ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="grid grid--2">
+        <div>
+          <h2>Seven days out</h2>
+          <p class="text-muted">A final revision plan, if you want one. Each day pairs topics that share
+            reasoning, so the practice transfers.</p>
+          <a class="btn btn--primary mt-2" href="practice.html">Start a mixed set</a>
+        </div>
+        <div class="card">
+          <div class="table-scroll" tabindex="0">
+            <table id="revision-table">
+              <thead><tr><th scope="col">Day</th><th scope="col">Focus</th><th scope="col">Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap grid grid--3">
+    <div>
+      <h2>General Maths Hub</h2>
+      <p>A free, open study site for QCAA General Mathematics Units 3 &amp; 4. No account, no tracking, no cost.</p>
+    </div>
+    <div>
+      <h2>Sections</h2>
+      <ul>
+        <li><a href="topics.html">Learning topics</a></li>
+        <li><a href="practice.html">Question generator</a></li>
+        <li><a href="formulas.html">Formula sheet</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Attribution</h2>
+      <p>Formulas and topic structure follow the QCAA General Mathematics 2025 formula book and syllabus.
+        Formula book content: © State of Queensland (QCAA) 2025, licensed
+        <a href="https://creativecommons.org/licenses/by/4.0" rel="license noopener" target="_blank">CC BY 4.0</a>.</p>
+      <p>This is an independent study resource and is not endorsed by or affiliated with the QCAA.</p>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/pages/home.js"></script>
+</body>
+</html>
