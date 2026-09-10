@@ -5,20 +5,20 @@
 
 /* ---------- Tokens ---------- */
 :root {
-  --bg: #f6f7fb;
-  --bg-alt: #eceef6;
+  --bg: #f4f7f6;
+  --bg-alt: #e7eeec;
   --surface: #ffffff;
-  --surface-2: #f9fafd;
-  --border: #dde1ec;
-  --border-strong: #c3c9dc;
-  --text: #131722;
-  --text-muted: #545d75;
-  --accent: #4b45c6;
-  --accent-2: #7a35c4;
-  --accent-soft: #ecebfb;
-  --accent-text: #3c37a8;
-  --ok: #0d6b5e;
-  --ok-soft: #e0f4f0;
+  --surface-2: #f5faf8;
+  --border: #d8e3e0;
+  --border-strong: #b9cac6;
+  --text: #10201e;
+  --text-muted: #4a5f5c;
+  --accent: #0e6b62;
+  --accent-2: #14808c;
+  --accent-soft: #e2efec;
+  --accent-text: #0a5049;
+  --ok: #2f6b2a;
+  --ok-soft: #e7f2e5;
   --warn: #8a5200;
   --warn-soft: #fdf0dc;
   --danger: #a51f1f;
@@ -30,7 +30,10 @@
   --radius-sm: 9px;
   --radius-lg: 22px;
   --maxw: 1180px;
-  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+  /* Two deliberate roles: the platform UI face for chrome and prose, and an
+     old-style serif for mathematics, where italic serif variables are the
+     typesetting convention. Both resolve locally — the site stays offline-capable. */
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
   --font-math: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino,
                Georgia, "Times New Roman", serif;
@@ -39,20 +42,20 @@
 }
 
 [data-theme="dark"] {
-  --bg: #0a0d15;
-  --bg-alt: #11151f;
-  --surface: #141926;
-  --surface-2: #1a2030;
-  --border: #262d40;
-  --border-strong: #38415a;
-  --text: #e9ecf5;
-  --text-muted: #a3adc4;
-  --accent: #9d97ff;
-  --accent-2: #cf9bff;
-  --accent-soft: #1e2036;
-  --accent-text: #b7b2ff;
-  --ok: #4fd6bd;
-  --ok-soft: #0f2a28;
+  --bg: #071110;
+  --bg-alt: #0c1918;
+  --surface: #10201e;
+  --surface-2: #162b28;
+  --border: #23403c;
+  --border-strong: #35564f;
+  --text: #e6efed;
+  --text-muted: #a2b8b4;
+  --accent: #5ccfbe;
+  --accent-2: #7bd6dc;
+  --accent-soft: #12312d;
+  --accent-text: #7edccb;
+  --ok: #86cc80;
+  --ok-soft: #142a13;
   --warn: #ffc46b;
   --warn-soft: #2e2313;
   --danger: #ff8f8f;
@@ -61,6 +64,35 @@
   --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
   --shadow-lg: 0 20px 46px rgba(0, 0, 0, .55);
   color-scheme: dark;
+}
+
+/* Viewers who have never touched the toggle follow their OS setting. The
+   guard lets an explicit light choice win over a dark system preference. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #071110;
+    --bg-alt: #0c1918;
+    --surface: #10201e;
+    --surface-2: #162b28;
+    --border: #23403c;
+    --border-strong: #35564f;
+    --text: #e6efed;
+    --text-muted: #a2b8b4;
+    --accent: #5ccfbe;
+    --accent-2: #7bd6dc;
+    --accent-soft: #12312d;
+    --accent-text: #7edccb;
+    --ok: #86cc80;
+    --ok-soft: #142a13;
+    --warn: #ffc46b;
+    --warn-soft: #2e2313;
+    --danger: #ff8f8f;
+    --danger-soft: #2e1618;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .5);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
+    --shadow-lg: 0 20px 46px rgba(0, 0, 0, .55);
+    color-scheme: dark;
+  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -227,7 +259,7 @@ main { min-height: 60vh; }
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #fff; box-shadow: var(--shadow-md);
 }
-[data-theme="dark"] .btn--primary { color: #10111c; }
+[data-theme="dark"] .btn--primary { color: #05100f; }
 .btn--primary:hover { box-shadow: var(--shadow-lg); }
 .btn--ghost { background: var(--surface); color: var(--text); border-color: var(--border-strong); }
 .btn--ghost:hover { background: var(--surface-2); }
@@ -262,10 +294,6 @@ main { min-height: 60vh; }
   border-radius: var(--radius); padding: 22px; text-decoration: none; color: inherit;
   box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-}
-.topic-card::after {
-  content: ""; position: absolute; inset: 0 auto 0 0; width: 4px;
-  background: linear-gradient(180deg, var(--accent), var(--accent-2)); opacity: .85;
 }
 .topic-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--border-strong); }
 .topic-card__num {
@@ -409,7 +437,7 @@ caption { text-align: left; font-size: .86rem; color: var(--text-muted); padding
   background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff;
   font-size: .8rem; font-weight: 700; font-variant-numeric: tabular-nums;
 }
-[data-theme="dark"] .steps > li::before { color: #10111c; }
+[data-theme="dark"] .steps > li::before { color: #05100f; }
 .steps__title { font-weight: 660; margin-bottom: .3em; font-size: .95rem; }
 .steps p, .question-prompt p, .knowledge dd { line-height: 1.95; }
 .steps p { margin-bottom: .5em; }

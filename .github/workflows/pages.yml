@@ -2,7 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - claude/math-education-website-0frsy1
   workflow_dispatch:
 
 permissions:
@@ -25,6 +27,10 @@ jobs:
           node-version: '20'
       - name: Check every generator produces a well-formed question
         run: node tools/verify-questions.mjs 200
+      - name: Check the single-file build is reproducible from source
+        run: |
+          node tools/build-single-file.mjs dist/general-maths-hub.html
+          git diff --exit-code -- dist/general-maths-hub.html
 
   deploy:
     name: Deploy

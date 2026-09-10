@@ -61,6 +61,21 @@ node tools/verify-questions.mjs 300   # 300 seeds per generator
 
 This runs in CI before any deploy.
 
+## Single-file build
+
+`tools/build-single-file.mjs` bundles the whole site into one self-contained
+HTML file, derived from the same source, so there is no second copy to maintain:
+
+```sh
+node tools/build-single-file.mjs        # -> dist/general-maths-hub.html
+```
+
+It inlines the CSS and every module, and swaps the four separate pages for a
+`?p=` query parameter. That leaves `location.hash` free, so the topic router
+(`#topic-id`) and formula deep links (`#f-formula-id`) keep working unchanged.
+Only one page controller runs per load, so each is wrapped in its own function
+scope. CI rebuilds it and fails if the committed file has drifted from source.
+
 ## Deploying
 
 The site is plain static files, so it can be served from anywhere.
@@ -73,6 +88,10 @@ The `.nojekyll` file stops Jekyll from stripping paths.
 **Anywhere else** — upload the repository contents to any static host
 (Netlify, Cloudflare Pages, Vercel, S3, a university web folder). There is
 nothing to build.
+
+**As one file** — `dist/general-maths-hub.html` is the entire site in a single
+document. Email it, drop it on a USB stick, or host it anywhere that serves one
+file. It works offline once loaded.
 
 ## Accessibility
 

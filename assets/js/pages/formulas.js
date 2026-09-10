@@ -74,12 +74,21 @@ render();
 search.addEventListener('input', debounce(e => render(e.target.value), 150));
 
 /* Highlight an entry linked to directly, e.g. formulas.html#f-annuity-pv */
-function highlightTarget() {
+function highlightTarget(retry = true) {
   document.querySelectorAll('.formula-item.is-target').forEach(el => el.classList.remove('is-target'));
   const id = location.hash.slice(1);
-  if (!id) return;
+  if (!id || !id.startsWith('f-')) return;
   const el = document.getElementById(id);
-  if (el && el.classList.contains('formula-item')) {
+  if (!el) {
+    // The entry exists but an active search has filtered it out — clear and retry.
+    if (retry && search.value) {
+      search.value = '';
+      render();
+      highlightTarget(false);
+    }
+    return;
+  }
+  if (el.classList.contains('formula-item')) {
     el.classList.add('is-target');
     el.scrollIntoView({ block: 'center' });
   }
