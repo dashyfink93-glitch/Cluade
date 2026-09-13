@@ -3,18 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Formula sheet — General Maths Hub</title>
-<meta name="description" content="The complete QCAA General Mathematics 2025 formula book, searchable and annotated with when and how to use each rule.">
+<title>Mock exam — General Maths Hub</title>
+<meta name="description" content="Sit a full QCAA General Mathematics mock exam: 14 questions across all ten topics, marked immediately with a grade and full worked solutions.">
 <meta name="color-scheme" content="light dark">
-<meta property="og:title" content="Formula sheet — General Maths Hub">
-<meta property="og:description" content="The complete QCAA General Mathematics 2025 formula book, searchable and annotated with when and how to use each rule.">
+<meta property="og:title" content="Mock exam — General Maths Hub">
+<meta property="og:description" content="Sit a full QCAA General Mathematics mock exam: 14 questions across all ten topics, marked immediately with a grade and full worked solutions.">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#8721;</text></svg>">
 <script>(function(){try{var d=JSON.parse(localStorage.getItem("gm-hub:v1")||"{}");if(d.theme==="dark"||d.theme==="light")document.documentElement.setAttribute("data-theme",d.theme);}catch(e){}})();</script>
 </head>
 <body>
-<a class="skip-link" href="#main">Skip to main content</a>
 <header class="site-header">
   <div class="wrap site-header__inner">
     <a class="brand" href="index.html">
@@ -36,49 +35,51 @@
     </button>
   </div>
 </header>
-
 <main id="main">
   <section class="section section--tight">
     <div class="wrap">
-      <p class="eyebrow">QCAA formula book &middot; General Mathematics 2025</p>
-      <h1>The formula sheet, annotated</h1>
-      <p class="lead text-muted" style="max-width:68ch">Everything you are given in the exam, plus the part the sheet
-        leaves out: when to reach for each rule and what goes wrong if you pick the neighbouring one.
-        Entries marked <em>derived</em> are standard results the syllabus expects but which are not printed on the sheet.</p>
-      <p class="text-muted" id="formula-counts"></p>
-      <div class="flex-row" style="align-items:flex-end;gap:20px">
-        <div class="field" style="max-width:360px;margin-bottom:0">
-          <label for="formula-search">Search formulas</label>
-          <input type="search" id="formula-search" placeholder="annuity, cosine, seasonal&hellip;" autocomplete="off">
-        </div>
-        <fieldset style="margin-bottom:0">
-          <legend class="fieldset__legend">Show</legend>
-          <div class="chip-row" id="scope-chips">
-            <label class="chip"><input type="radio" name="scope" value="all" checked><span>Everything</span></label>
-            <label class="chip"><input type="radio" name="scope" value="official"><span>Official sheet only</span></label>
-            <label class="chip"><input type="radio" name="scope" value="derived"><span>Derived only</span></label>
-          </div>
-        </fieldset>
-      </div>
-      <p class="text-muted" id="search-status" role="status" aria-live="polite"></p>
-      <nav class="jump-nav" id="jump-nav" aria-label="Formula sections"></nav>
-      <noscript><p class="noscript-note">Search and filtering need JavaScript, but every formula is listed below.</p></noscript>
+      <p class="eyebrow">Mock exam</p>
+      <h1>Sit a full paper, then find out where the marks went</h1>
+      <p class="lead text-muted" style="max-width:68ch">A fresh paper every time, drawn across all ten topics.
+        Answer everything, submit once, and the paper is marked immediately &mdash; with a grade, a topic breakdown,
+        and a full worked solution for every question.</p>
+      <noscript><p class="noscript-note">The mock exam needs JavaScript. The
+        <a href="topics.html">learning topics</a> and <a href="formulas.html">formula sheet</a> do not.</p></noscript>
     </div>
   </section>
 
   <section class="section section--tight section--continue">
-    <div class="wrap" id="formula-root"></div>
-  </section>
-
-  <section class="section section--alt">
     <div class="wrap">
-      <h2>The printed sheet</h2>
-      <p class="lead text-muted" style="max-width:66ch">Both pages of the QCAA General Mathematics 2025 formula book,
-        exactly as they are handed to you in the exam. Every formula on them appears in searchable form above.</p>
-      <div class="sheet-pages" id="official-sheet"></div>
-      <p class="text-muted"><small>Reproduced from the QCAA General Mathematics 2025 formula book.
-        &copy; State of Queensland (QCAA) 2025, licensed
-        <a href="https://creativecommons.org/licenses/by/4.0" rel="license noopener" target="_blank">CC BY 4.0</a>.</small></p>
+      <div id="exam-start" hidden>
+        <div class="grid grid--2">
+          <div class="card card--pad-lg">
+            <h2 style="font-size:1.15rem">Before you start</h2>
+            <ul>
+              <li><strong id="paper-length">14</strong> questions spread across all ten topics, mixed Skill, Apply and Challenge.</li>
+              <li>Only the final answer is marked, so write your working on paper as you would in the real exam.</li>
+              <li>The QCAA formula sheet is allowed &mdash; open it in a second tab.</li>
+              <li>There is no time limit, but the clock runs so you can see your pace.</li>
+              <li>You can move between questions freely and change answers until you submit.</li>
+            </ul>
+            <p class="text-muted" id="best-result"></p>
+            <button class="btn btn--primary btn--block mt-2" type="button" id="start-btn">Start the paper</button>
+          </div>
+          <div class="card card--pad-lg">
+            <h2 style="font-size:1.15rem">How it is graded</h2>
+            <p class="text-muted">Your percentage of the total marks available sets the grade.</p>
+            <div class="table-scroll" tabindex="0">
+              <table class="numeric">
+                <thead><tr><th scope="col">Grade</th><th scope="col">Percentage</th></tr></thead>
+                <tbody id="grade-bands"></tbody>
+              </table>
+            </div>
+            <p class="text-muted mb-0"><small>These bands are for your own tracking. QCAA reports subject results
+              on its own scale and does not use plus/minus grades, so treat this as a progress check rather than
+              a prediction of an exam result.</small></p>
+          </div>
+        </div>
+      </div>
+      <div id="exam-root"></div>
     </div>
   </section>
 </main>
@@ -106,7 +107,6 @@
     </div>
   </div>
 </footer>
-
-<script type="module" src="assets/js/pages/formulas.js"></script>
+<script type="module" src="assets/js/pages/exam.js"></script>
 </body>
 </html>

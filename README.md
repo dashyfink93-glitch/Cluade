@@ -12,9 +12,43 @@ No build step, no dependencies, no tracking, no account. It is a folder of stati
 | Page | What it does |
 | --- | --- |
 | `index.html` | Overview, topic grid, study cycle, progress dashboard |
-| `topics.html` | All ten topics: big idea, mastery targets, core knowledge, formula bank, worked example, common errors |
+| `topics.html` | All ten topics, in three tabs: a teacher-voice **Lesson**, the syllabus **Reference**, and a **Skills checklist** |
 | `practice.html` | The question generator, with answer checking and worked steps |
-| `formulas.html` | The complete QCAA 2025 formula book, searchable and annotated |
+| `exam.html` | A marked mock exam: 14 questions, a grade, a topic breakdown and full solutions |
+| `formulas.html` | The complete QCAA 2025 formula book, searchable and annotated, plus the printed pages |
+
+### Lessons
+
+Each topic opens on a lesson rather than a definition list: a concrete hook, the
+idea in plain language before any notation, a narrated walk-through of how to
+think about it, a "which method do I use?" table, and the specific wrong belief
+behind each common mistake. That content lives in `assets/js/data/teaching.js`,
+separate from the syllabus reference material in `topics.js`.
+
+Inside a Claude viewer the lesson also carries an **Ask a tutor** panel, backed by
+the artifact `sample` capability and grounded in that topic's material. On a plain
+static host the capability is absent, the panel never renders, and nothing else
+changes.
+
+### The mock exam
+
+`exam.html` builds a fresh 14-question paper spread across all ten topics, in
+roughly the Skill/Apply/Challenge balance of a real combination-response paper.
+Only auto-markable question types are drawn, so the paper is marked without the
+student judging their own written response. Submitting gives a percentage, a
+grade from A+ to D−, marks by topic weakest-first, and a full worked solution
+for every question.
+
+The grade bands are a self-tracking aid, not a QCAA prediction — QCAA reports on
+its own scale and does not use plus/minus grades.
+
+### The formula sheet
+
+All **43** formulas printed on the official QCAA 2025 sheet are present, in the
+book's own section order, and both printed pages are embedded as images. A
+further 14 standard results the syllabus assumes but does not print — R² = r²,
+the seasonal-index rules, float, max-flow/min-cut — are included and marked
+`derived`, and can be filtered out.
 
 ### The question generator
 

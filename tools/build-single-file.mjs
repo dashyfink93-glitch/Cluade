@@ -27,19 +27,30 @@ const MODULES = [
   'assets/js/lib/store.js',
   'assets/js/data/formulas.js',
   'assets/js/data/topics.js',
+  'assets/js/data/teaching.js',
   'assets/js/lib/ui.js',
+  'assets/js/lib/tutor.js',
   'assets/js/data/questions/data-topics.js',
   'assets/js/data/questions/sequences-earth.js',
   'assets/js/data/questions/finance.js',
   'assets/js/data/questions/networks.js',
-  'assets/js/data/questions/index.js'
+  'assets/js/data/questions/index.js',
+  'assets/js/lib/exam.js'
+];
+
+/* Images have to travel inside the file — a single-file page has no server
+   to fetch them from, and the artifact CSP blocks external image hosts. */
+const INLINE_IMAGES = [
+  'assets/img/qcaa-formula-book-p2.png',
+  'assets/img/qcaa-formula-book-p3.png'
 ];
 
 const PAGES = [
   { id: 'home', file: 'index.html', controller: 'assets/js/pages/home.js', title: 'General Maths Hub — QCAA General Mathematics Units 3 & 4' },
   { id: 'topics', file: 'topics.html', controller: 'assets/js/pages/topics.js', title: 'Learning topics — General Maths Hub' },
   { id: 'practice', file: 'practice.html', controller: 'assets/js/pages/practice.js', title: 'Question generator — General Maths Hub' },
-  { id: 'formulas', file: 'formulas.html', controller: 'assets/js/pages/formulas.js', title: 'Formula sheet — General Maths Hub' }
+  { id: 'formulas', file: 'formulas.html', controller: 'assets/js/pages/formulas.js', title: 'Formula sheet — General Maths Hub' },
+  { id: 'exam', file: 'exam.html', controller: 'assets/js/pages/exam.js', title: 'Mock exam — General Maths Hub' }
 ];
 
 /** Removes ES module syntax so the file body can live in a shared scope. */
@@ -61,7 +72,18 @@ function rewriteLinks(text) {
     .replace(/index\.html/g, '?p=home')
     .replace(/topics\.html/g, '?p=topics')
     .replace(/practice\.html/g, '?p=practice')
-    .replace(/formulas\.html/g, '?p=formulas');
+    .replace(/formulas\.html/g, '?p=formulas')
+    .replace(/exam\.html/g, '?p=exam');
+}
+
+/** Swaps image paths for data URIs so the page carries its own assets. */
+function inlineImages(text) {
+  let out = text;
+  for (const rel of INLINE_IMAGES) {
+    const b64 = readFileSync(resolve(root, rel)).toString('base64');
+    out = out.split(rel).join(`data:image/png;base64,${b64}`);
+  }
+  return out;
 }
 
 /** Pulls one element (by its opening tag) out of a page, tags included. */
@@ -83,7 +105,7 @@ const shells = Object.fromEntries(PAGES.map(p =>
   [p.id, rewriteLinks(extract(read(p.file), '<main id="main">', 'main'))]));
 
 const library = MODULES.map(m =>
-  `/* ── ${m} ── */\n${rewriteLinks(stripModuleSyntax(read(m)))}`).join('\n\n');
+  `/* ── ${m} ── */\n${inlineImages(rewriteLinks(stripModuleSyntax(read(m))))}`).join('\n\n');
 
 const controllers = PAGES.map(p => {
   let body = stripModuleSyntax(read(p.controller));
@@ -167,7 +189,7 @@ writeFileSync(outPath, out);
 const kb = (Buffer.byteLength(out) / 1024).toFixed(0);
 console.log(`Built ${outPath}`);
 console.log(`  ${kb} KB · ${MODULES.length} modules · ${PAGES.length} pages inlined`);
-for (const bad of ['index.html', 'topics.html', 'practice.html', 'formulas.html']) {
+for (const bad of ['index.html', 'topics.html', 'practice.html', 'formulas.html', 'exam.html']) {
   if (out.includes(bad)) console.warn(`  ! still references ${bad}`);
 }
 if (out.indexOf('<title>') > 8192) console.warn('  ! <title> is beyond the first 8KB');

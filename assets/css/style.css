@@ -97,6 +97,11 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* The `hidden` attribute only sets display:none at UA specificity, so any
+   explicit display rule (.btn is inline-flex, .chip-row is flex) silently
+   beats it and the element stays visible. Make the attribute authoritative. */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -610,4 +615,185 @@ details.solution > summary:hover { background: var(--surface); }
   .site-header, .site-footer, .control-panel, .btn, .jump-nav { display: none !important; }
   body { background: #fff; color: #000; }
   details.solution[open] > .solution__body { display: block; }
+}
+
+/* ==========================================================================
+   Lesson, tutor, exam — components added for the teaching and mock-exam work
+   ========================================================================== */
+
+/* ---------- Breadcrumbs and prev/next ---------- */
+.crumbs { font-size: .84rem; color: var(--text-muted); margin-bottom: .6em; }
+.crumbs a { color: var(--text-muted); }
+
+.prev-next {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--border);
+}
+.prev-next__link {
+  display: flex; flex-direction: column; gap: 3px; padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); text-decoration: none; color: inherit;
+}
+.prev-next__link:hover { border-color: var(--accent); background: var(--surface-2); }
+.prev-next__link--next { text-align: right; }
+.prev-next__dir {
+  font-size: .74rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--accent-text);
+}
+.prev-next__title { font-weight: 600; font-size: .95rem; }
+
+/* ---------- Tabs ---------- */
+.tabs {
+  display: flex; gap: 4px; margin: 22px 0 20px; border-bottom: 2px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button {
+  font: inherit; font-weight: 620; font-size: .95rem; white-space: nowrap;
+  padding: .6em 1em; border: 0; background: none; cursor: pointer; color: var(--text-muted);
+  border-bottom: 2px solid transparent; margin-bottom: -2px; border-radius: 8px 8px 0 0;
+}
+.tabs button:hover { color: var(--text); background: var(--surface-2); }
+.tabs button[aria-selected="true"] { color: var(--accent-text); border-bottom-color: var(--accent); }
+
+/* ---------- Lesson ---------- */
+.lesson h3 { margin-top: 30px; }
+.lesson h3:first-of-type { margin-top: 22px; }
+.lesson__hook {
+  font-size: 1.12rem; line-height: 1.7; font-weight: 500;
+  border-left: 3px solid var(--accent); padding: 2px 0 2px 18px; margin-bottom: 4px;
+}
+.lesson__intuition { font-size: 1.02rem; }
+.steps--lesson > li { background: var(--surface); }
+
+.misconceptions { display: grid; gap: 14px; }
+.misconception {
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 15px 17px; background: var(--surface);
+}
+.misconception p { margin-bottom: .5em; }
+.misconception > :last-child { margin-bottom: 0; }
+.misconception__tag {
+  display: inline-block; font-size: .68rem; font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; padding: .12em .5em; border-radius: 5px; margin-right: 7px;
+  background: var(--danger-soft); color: var(--danger); vertical-align: 1px;
+}
+.misconception__tag--ok { background: var(--ok-soft); color: var(--ok); }
+.misconception__why { font-size: .9rem; color: var(--text-muted); padding-left: 2px; }
+
+/* ---------- Tutor ---------- */
+.tutor {
+  margin-top: 30px; padding: 20px; border-radius: var(--radius);
+  border: 1px solid var(--border-strong); background: var(--surface-2);
+}
+.tutor__head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.tutor__head h3 { margin: 0; font-size: 1.05rem; }
+.tutor__head .btn { margin-left: auto; }
+.tutor__note { font-size: .86rem; margin: .5em 0 0; }
+.chip-btn {
+  font: inherit; font-size: .85rem; padding: .4em .85em; border-radius: 999px;
+  border: 1px solid var(--border-strong); background: var(--surface);
+  color: var(--text-muted); cursor: pointer; text-align: left;
+}
+.chip-btn:hover { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
+.tutor__log { display: grid; gap: 12px; margin: 16px 0 0; max-height: 460px; overflow-y: auto; }
+.tutor__log:empty { display: none; }
+.bubble { padding: 12px 15px; border-radius: var(--radius-sm); font-size: .95rem; }
+.bubble > :last-child { margin-bottom: 0; }
+.bubble--you {
+  background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  margin-left: auto; max-width: 85%;
+}
+.bubble--tutor { background: var(--surface); border: 1px solid var(--border); }
+.bubble--tutor ul, .bubble--tutor ol { margin-bottom: .6em; }
+.tutor__thinking { color: var(--text-muted); font-style: italic; }
+.tutor__form { display: flex; gap: 9px; margin-top: 14px; flex-wrap: wrap; }
+.tutor__form input { flex: 1 1 220px; }
+
+/* ---------- Formula sheet additions ---------- */
+.pill--derived {
+  background: var(--warn-soft); color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 34%, transparent);
+}
+.pill--page { font-weight: 500; }
+.sheet-pages { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.sheet-page { margin: 0; }
+.sheet-page img {
+  display: block; width: 100%; height: auto; border-radius: var(--radius-sm);
+  /* The scan is a white page; keep it on white in both themes rather than inverting it. */
+  background: #fff; border: 1px solid var(--border-strong); box-shadow: var(--shadow-md);
+}
+.sheet-page figcaption { font-size: .84rem; color: var(--text-muted); margin-top: 9px; }
+
+/* ---------- Exam ---------- */
+.exam-bar {
+  scroll-margin-top: 90px;
+  display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  padding: 14px 18px; margin-bottom: 16px; border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+}
+.exam-bar > div:first-child { flex: 1 1 220px; }
+.exam-bar__label {
+  font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: .45em;
+}
+.exam-bar__timer {
+  font-family: var(--font-mono); font-size: 1.15rem; font-variant-numeric: tabular-nums;
+  margin: 0; color: var(--text-muted);
+}
+
+.palette { display: flex; flex-wrap: wrap; gap: 7px; list-style: none; margin: 0 0 16px; padding: 0; }
+.palette li { margin: 0; }
+.palette__btn {
+  width: 38px; height: 38px; border-radius: 9px; font: inherit; font-weight: 640;
+  font-variant-numeric: tabular-nums; cursor: pointer;
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-muted);
+}
+.palette__btn:hover { border-color: var(--accent); }
+.palette__btn.is-answered { background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent); }
+.palette__btn.is-current { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* Result */
+.result {
+  scroll-margin-top: 90px;   /* clear the sticky header when scrolled into view */
+  display: flex; gap: 24px; align-items: center; flex-wrap: wrap;
+  padding: 26px; border-radius: var(--radius); background: var(--surface);
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.result__grade {
+  display: grid; place-items: center; min-width: 132px; padding: 18px 24px;
+  border-radius: var(--radius); border: 2px solid;
+}
+.result__grade--good { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.result__grade--fair { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+.result__grade--poor { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
+.result__grade-label {
+  font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin: 0;
+}
+.result__grade-value { font-size: 3.2rem; font-weight: 780; line-height: 1.05; margin: 0; letter-spacing: -.03em; }
+.result__summary { flex: 1 1 260px; }
+.result__summary h2 { margin-bottom: .2em; }
+
+.review { display: grid; gap: 9px; }
+.review__item > summary {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  font-weight: 600; font-size: .93rem;
+}
+.review__item > summary::before { order: -1; }
+.review__num { font-family: var(--font-mono); font-weight: 700; }
+.review__verdict { font-weight: 700; }
+.review__item.is-right .review__verdict { color: var(--ok); }
+.review__item.is-wrong .review__verdict { color: var(--danger); }
+.review__marks { font-variant-numeric: tabular-nums; color: var(--text-muted); }
+.review__topic { color: var(--text-muted); font-weight: 500; margin-left: auto; }
+.review__item.is-right { border-left: 3px solid var(--ok); }
+.review__item.is-wrong { border-left: 3px solid var(--danger); }
+
+.topic-nav__done.is-complete { color: var(--ok); font-weight: 700; }
+
+@media (max-width: 560px) {
+  .prev-next { grid-template-columns: 1fr; }
+  .prev-next__link--next { text-align: left; }
+  .result__grade-value { font-size: 2.6rem; }
+  .review__topic { margin-left: 0; width: 100%; }
 }

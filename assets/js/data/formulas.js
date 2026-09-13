@@ -13,15 +13,22 @@
  *   topics   topic ids that examine it
  */
 
+/* Listed in the order they appear in the printed QCAA formula book. */
 export const FORMULA_SECTIONS = [
-  { id: 'data', title: 'Data', blurb: 'Bivariate analysis, least-squares lines and outliers.' },
-  { id: 'sequences', title: 'Sequences', blurb: 'Arithmetic and geometric nth-term rules.' },
-  { id: 'finance', title: 'Finance', blurb: 'Interest, loans, annuities and perpetuities.' },
-  { id: 'earth', title: 'Earth geometry', blurb: 'Great-circle distances on the Earth.' },
-  { id: 'networks', title: 'Graphs and networks', blurb: "Euler's planar formula." },
-  { id: 'trig', title: 'Trigonometry', blurb: 'Right-angled and non-right-angled triangles.' },
-  { id: 'mensuration', title: 'Mensuration', blurb: 'Perimeter, area, surface area and volume.' },
-  { id: 'shape', title: 'Shape and measurement', blurb: "Sectors and Heron's rule." }
+  { id: 'mensuration', title: 'Mensuration', blurb: 'Perimeter, area, surface area and volume.', page: 1 },
+  { id: 'shape', title: 'Shape and measurement', blurb: "Sectors and Heron's rule.", page: 1 },
+  { id: 'data', title: 'Data', blurb: 'Bivariate analysis, least-squares lines and outliers.', page: 1 },
+  { id: 'sequences', title: 'Sequences', blurb: 'Arithmetic and geometric nth-term rules.', page: 1 },
+  { id: 'earth', title: 'Earth geometry', blurb: 'Great-circle distances on the Earth.', page: 2 },
+  { id: 'networks', title: 'Graphs and networks', blurb: "Euler's planar formula.", page: 2 },
+  { id: 'trig', title: 'Trigonometry', blurb: 'Right-angled and non-right-angled triangles.', page: 2 },
+  { id: 'finance', title: 'Finance', blurb: 'Interest, loans, annuities and perpetuities.', page: 2 }
+];
+
+/* The two pages of the printed book, rendered from the source PDF. */
+export const FORMULA_BOOK_PAGES = [
+  { src: 'assets/img/qcaa-formula-book-p2.png', label: 'Page 1 of 2 — Mensuration, Shape and measurement, Data, Sequences' },
+  { src: 'assets/img/qcaa-formula-book-p3.png', label: 'Page 2 of 2 — Earth geometry, Graphs and networks, Trigonometry, Finance' }
 ];
 
 export const FORMULAS = [
@@ -384,6 +391,10 @@ export const FORMULAS = [
 ];
 
 export const FORMULA_BY_ID = Object.fromEntries(FORMULAS.map(f => [f.id, f]));
+
+/** Entries printed on the official sheet, as opposed to standard results the syllabus assumes. */
+export const OFFICIAL = FORMULAS.filter(f => !f.derived);
+export const DERIVED = FORMULAS.filter(f => f.derived);
 
 export function formulasForTopic(topicId) {
   return FORMULAS.filter(f => f.topics.includes(topicId));
