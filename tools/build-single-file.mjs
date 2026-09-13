@@ -117,10 +117,19 @@ const controllers = PAGES.map(p => {
   return `  ${p.id}() {\n${indented}\n  }`;
 }).join(',\n');
 
+/* The page's webfonts. Without these the single-file build silently falls back
+   to system faces and stops looking like the design. fonts.googleapis.com and
+   fonts.gstatic.com are both on the artifact CSP allowlist. */
+const fontLinks = (indexHtml.match(/<link[^>]+fonts\.g(?:oogleapis|static)\.com[^>]*>/g) || [])
+  .concat(indexHtml.match(/<link[^>]+rel="preconnect"[^>]*>/g) || [])
+  .filter((v, i, a) => a.indexOf(v) === i)
+  .join('\n');
+
 const css = read('assets/css/style.css');
 const title = 'General Maths Hub';
 
 const out = `<title>${title}</title>
+${fontLinks}
 <style>
 ${css}
 /* The single-file build has no separate document per page. */
@@ -194,3 +203,5 @@ for (const bad of ['index.html', 'topics.html', 'practice.html', 'formulas.html'
   if (out.includes(bad)) console.warn(`  ! still references ${bad}`);
 }
 if (out.indexOf('<title>') > 8192) console.warn('  ! <title> is beyond the first 8KB');
+if (!out.includes('fonts.googleapis.com')) console.warn('  ! no webfont link — the bundle will fall back to system fonts');
+else console.log('  webfonts linked');
