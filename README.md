@@ -17,12 +17,48 @@ No build step, no dependencies, no tracking, no account. It is a folder of stati
 | `exam.html` | A marked mock exam: 14 questions, a grade, a topic breakdown and full solutions |
 | `formulas.html` | The complete QCAA 2025 formula book, searchable and annotated, plus the printed pages |
 
+### Design
+
+Headings and the syllabus numerals are set in Fraunces, running text and the
+interface in Public Sans, and anything that lines up in a column in IBM Plex
+Mono. The maths keeps a Times-like serif, because italic serif variables are the
+typesetting convention. Every stack falls back to a real local face, so the site
+still reads if the webfonts never arrive.
+
+One accent (a deep teal) carries the interface, with an ochre as a second voice
+for annotations. Semantic colours are kept off both.
+
+Explanations follow the humanizer guidance: no em dashes as punctuation, no
+inflated vocabulary, active voice, varied sentence length. Mathematical ranges
+(`pp. 1–60`) and edge labels (`A–B`) keep their dashes, because there they are
+notation rather than punctuation.
+
+### Charts
+
+`assets/js/lib/charts.js` draws scatterplots, time series and residual plots as
+inline SVG for the bivariate and time-series questions, in both the generator
+and the mock exam.
+
+Form follows the data's job, and both use emphasis rather than a categorical
+palette: observed data takes the accent colour, and a fitted or trend line is a
+recessive dashed grey with its own label, so the two differ by shape and dash as
+well as hue. Chart colours were validated with the dataviz palette checker
+(light ΔE 28.9 normal / 26.2 protan; dark 24.3 / 22.5). Every chart ships the
+same numbers as a table, which is both the accessible form and the relief the
+low-contrast context grey requires.
+
+Scatterplot data is built to *have* the summary statistics the question quotes.
+Rather than scattering points near a line and hoping, y is assembled from the
+standardised x weighted by r plus exactly uncorrelated noise weighted by
+sqrt(1 - r squared), so the picture and the table agree.
+
 ### Lessons
 
 Each topic opens on a lesson rather than a definition list: a concrete hook, the
-idea in plain language before any notation, a narrated walk-through of how to
-think about it, a "which method do I use?" table, and the specific wrong belief
-behind each common mistake. That content lives in `assets/js/data/teaching.js`,
+idea in plain words before any notation, a walk-through of how to think about it,
+a "which method do I use" table, and the specific wrong belief behind each
+common mistake. The register is deliberately plain, with everyday comparisons
+rather than restated syllabus wording. That content lives in `assets/js/data/teaching.js`,
 separate from the syllabus reference material in `topics.js`.
 
 Inside a Claude viewer the lesson also carries an **Ask a tutor** panel, backed by
@@ -46,9 +82,10 @@ its own scale and does not use plus/minus grades.
 
 All **43** formulas printed on the official QCAA 2025 sheet are present, in the
 book's own section order, and both printed pages are embedded as images. A
-further 14 standard results the syllabus assumes but does not print — R² = r²,
-the seasonal-index rules, float, max-flow/min-cut — are included and marked
-`derived`, and can be filtered out.
+further 14 standard results the syllabus assumes but does not print (R² = r²,
+the seasonal-index rules, float, max-flow/min-cut) are included and marked
+`derived`, and can be filtered out. Every entry also lists what each letter
+stands for, and the formula chips beside a question expand to show the same.
 
 ### The question generator
 

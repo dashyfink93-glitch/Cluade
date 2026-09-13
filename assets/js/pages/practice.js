@@ -16,7 +16,7 @@ let answered = false;
 
 /* ---------------- Filters ---------------- */
 topicSelect.insertAdjacentHTML('beforeend', TOPICS.map(t =>
-  `<option value="${t.id}">${t.number} — ${escapeHtml(t.title)}</option>`).join(''));
+  `<option value="${t.id}">${t.number}. ${escapeHtml(t.title)}</option>`).join(''));
 
 tierChips.innerHTML = TIERS.map(t => `
   <label class="chip">
@@ -35,7 +35,7 @@ function checkHtml(q) {
   if (q.check.type === 'number') {
     return `<form class="answer-form" id="answer-form">
       <div class="field">
-        <label for="answer-input">Your answer — ${escapeHtml(q.check.label)}</label>
+        <label for="answer-input">Your answer: ${escapeHtml(q.check.label)}</label>
         <input type="text" inputmode="decimal" id="answer-input" autocomplete="off"
           aria-describedby="answer-feedback">
       </div>
@@ -60,7 +60,7 @@ function checkHtml(q) {
   return `<div class="callout callout--tip">
     <p class="callout__title">Written response</p>
     <p class="mb-0">Write your response in full sentences, then open the steps and compare.
-      Mark yourself honestly — the model answer shows what a full-mark response contains.</p>
+      Mark yourself honestly. The model answer shows what a full-mark response contains.</p>
   </div>
   <div class="flex-row" id="self-mark">
     <button class="btn btn--ghost btn--sm" type="button" data-mark="1">I got this</button>
@@ -169,7 +169,7 @@ function wireQuestion(q) {
       }
       const ok = Math.abs(v - q.check.value) <= q.check.tol;
       settle(ok, ok
-        ? 'Correct — compare your working with the steps below.'
+        ? 'Correct. Compare your working with the steps below.'
         : `Not quite. The answer is ${formatExpected(q.check)}. Work through the steps to find where it diverged.`,
         ok ? 'right' : 'wrong');
     });
@@ -191,7 +191,7 @@ function wireQuestion(q) {
         else if (i === idx) l.classList.add('is-wrong');
       });
       af.querySelectorAll('input').forEach(i => { i.disabled = true; });
-      settle(ok, ok ? 'Correct.' : 'Not quite — the correct option is highlighted.', ok ? 'right' : 'wrong');
+      settle(ok, ok ? 'Correct.' : 'Not quite. The correct option is highlighted.', ok ? 'right' : 'wrong');
     });
   }
 
@@ -201,7 +201,7 @@ function wireQuestion(q) {
       const btn = e.target.closest('button[data-mark]');
       if (!btn) return;
       const ok = btn.dataset.mark === '1';
-      settle(ok, ok ? 'Recorded as correct.' : 'Recorded — reread the steps and try a fresh one.', ok ? 'right' : 'wrong');
+      settle(ok, ok ? 'Recorded as correct.' : 'Recorded. Reread the steps and try a fresh one.', ok ? 'right' : 'wrong');
     });
   }
 

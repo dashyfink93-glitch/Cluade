@@ -237,7 +237,7 @@ function show(id) {
   activeId = topic.id;
   renderList();
   renderPanel(topic);
-  document.title = `${topic.title} — General Maths Hub`;
+  document.title = `${topic.title}. General Maths Hub`;
   announce(`${topic.title} loaded.`);
 }
 

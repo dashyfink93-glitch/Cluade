@@ -4,6 +4,58 @@
  * it uses, numbered steps, the answer, and the error it is designed to expose.
  */
 import { round, num, tidy, math, frac, table, money } from '../../lib/fmt.js';
+import { scatterPlot, timeSeriesPlot, residualPlot, twoWayTable } from '../../lib/charts.js';
+
+/** Mean and sample standard deviation of a list. */
+function meanSd(v) {
+  const mean = v.reduce((a, b) => a + b, 0) / v.length;
+  const sd = Math.sqrt(v.reduce((a, b) => a + (b - mean) ** 2, 0) / (v.length - 1)) || 1;
+  return { mean, sd };
+}
+
+/**
+ * Points whose sample statistics are the ones the question quotes.
+ *
+ * A plot that disagrees with its own summary table teaches the wrong thing, so
+ * rather than scattering points near a line and hoping, this builds y from two
+ * exactly uncorrelated pieces: the standardised x, weighted r, and independent
+ * noise weighted sqrt(1 - r squared). The result has the stated means, standard
+ * deviations and correlation, up to rounding for display.
+ */
+function scatterWithR(rng, { n = 10, xbar, sx, ybar, sy, r, dp = 1 }) {
+  const rawX = Array.from({ length: n }, (_, i) =>
+    (i - (n - 1) / 2) / ((n - 1) / 2) + rng.float(-0.25, 0.25, 3));
+  const mx = meanSd(rawX);
+  const zx = rawX.map(v => (v - mx.mean) / mx.sd);
+
+  // Noise, then strip out whatever part of it points along x.
+  let noise = Array.from({ length: n }, () => rng.float(-1, 1, 4));
+  const dot = noise.reduce((a, v, i) => a + v * zx[i], 0);
+  const zxSq = zx.reduce((a, v) => a + v * v, 0);
+  noise = noise.map((v, i) => v - (dot / zxSq) * zx[i]);
+  const mn = meanSd(noise);
+  const zn = noise.map(v => (v - mn.mean) / mn.sd);
+
+  const k = Math.sqrt(Math.max(0, 1 - r * r));
+  return zx.map((z, i) => ({
+    x: round(xbar + sx * z, dp),
+    y: round(ybar + sy * (r * z + k * zn[i]), dp)
+  })).sort((a, b) => a.x - b.x);
+}
+
+/** A quarterly series with a trend and a repeating seasonal shape. */
+function seasonalSeries(rng, { quarters = 8, base, growth, indices }) {
+  const values = [], labels = [], deseasonalised = [];
+  for (let i = 0; i < quarters; i++) {
+    const q = i % 4;
+    const trend = base + growth * i;
+    const v = round(trend * indices[q] * rng.float(0.97, 1.03, 3), 0);
+    values.push(v);
+    labels.push(`Y${Math.floor(i / 4) + 1} Q${q + 1}`);
+    deseasonalised.push(round(v / indices[q], 0));
+  }
+  return { values, labels, deseasonalised };
+}
 
 /* ------------------------------------------------------------------ contexts */
 const TWO_WAY = [
@@ -73,7 +125,7 @@ export const bivariate1 = [
           { t: 'Interpret in context',
             h: `<p>${num(R2 * 100, 2)}% of the variation in <strong>${c.y}</strong> is explained by the linear relationship with <strong>${c.x}</strong>.</p>` }
         ],
-        answer: `${math(`R<sup>2</sup> <span class="op">=</span> ${tidy(R2)}`)} — ${num(R2 * 100, 2)}% of the variation in ${c.y} is explained by the linear relationship with ${c.x}.`,
+        answer: `${math(`R<sup>2</sup> <span class="op">=</span> ${tidy(R2)}`)}. That means ${num(R2 * 100, 2)}% of the variation in ${c.y} is explained by the linear relationship with ${c.x}.`,
         pitfall: 'A full-mark interpretation names the response variable and the word "variation". "R² is 70%" on its own does not earn the interpretation mark.',
         check: { type: 'number', value: R2, tol: 0.0005, label: 'R² (4 decimal places)' }
       };
@@ -126,16 +178,15 @@ export const bivariate1 = [
       const higher = percA > percB ? c.a : c.b;
       return {
         prompt: `<p>A survey classified ${c.unit} by ${c.ev} and by whether they ${c.rv}.</p>
-          ${table(['Group', 'Yes', 'No', 'Total'], [
-            [c.a, yesA, nA - yesA, nA],
-            [c.b, yesB, nB - yesB, nB],
-            ['Total', yesA + yesB, (nA - yesA) + (nB - yesB), nA + nB]
-          ])}
+          ${twoWayTable({
+            evName: c.ev, yesLabel: 'Yes', noLabel: 'No',
+            groups: [{ name: c.a, yes: yesA, no: nA - yesA }, { name: c.b, yes: yesB, no: nB - yesB }]
+          })}
           <p class="mb-0">Percentage the table by group and decide whether the data support an association between ${c.ev} and whether ${c.unit} ${c.rv}.</p>`,
         formulaIds: [],
         steps: [
           { t: 'Choose the right total',
-            h: `<p>${c.ev} is the explanatory variable, so percentage <em>across each row</em> using that group's own total — never the grand total of ${nA + nB}.</p>` },
+            h: `<p>${c.ev} is the explanatory variable, so percentage <em>across each row</em> using that group's own total, never the grand total of ${nA + nB}.</p>` },
           { t: `Percentage for ${c.a}`,
             h: `<p>${math(`${frac(yesA, nA)} <span class="op">×</span> 100 <span class="op">=</span> ${num(percA, 1)}%`, `${yesA} over ${nA} times 100 equals ${num(percA, 1)} percent`)}</p>` },
           { t: `Percentage for ${c.b}`,
@@ -146,7 +197,7 @@ export const bivariate1 = [
                   ? `A difference of this size is systematic rather than a small fluctuation, so the data <strong>support an association</strong>: ${higher} are more likely to ${c.rv}.`
                   : `A difference this small is weak evidence, so the data give <strong>little support</strong> for an association.`}</p>` }
         ],
-        answer: `${c.a}: ${num(percA, 1)}%; ${c.b}: ${num(percB, 1)}% — a difference of ${num(diff, 1)} percentage points, which ${diff >= 10 ? 'supports' : 'gives little support for'} an association.`,
+        answer: `${c.a}: ${num(percA, 1)}%; ${c.b}: ${num(percB, 1)}%. A difference of ${num(diff, 1)} percentage points, which ${diff >= 10 ? 'supports' : 'gives little support for'} an association.`,
         pitfall: 'Percentaging against the grand total is the single most common error here. Percentage within the groups made by the explanatory variable.',
         check: { type: 'number', value: percA, tol: 0.15, label: `Percentage of ${c.a} who ${c.rv} (1 dp)`, unit: '%' }
       };
@@ -186,7 +237,7 @@ export const bivariate1 = [
                 : 'One of each → parallel boxplots or back-to-back stem plots comparing the numerical variable across the categories.'}</p>` }
         ],
         answer: correct + '.',
-        pitfall: 'A number is not automatically numerical. Postcodes and Likert codes are labels — categorical.',
+        pitfall: 'A number is not automatically numerical. Postcodes and Likert codes are labels. Categorical.',
         check: { type: 'choice', options, correct: options.indexOf(correct) }
       };
     }
@@ -201,6 +252,10 @@ export const bivariate1 = [
       const mag = rng.pick([0.32, 0.41, 0.58, 0.63, 0.71, 0.79, 0.86, 0.92]);
       const r = round(sign * mag, 2);
       const s = strengthOf(mag);
+      const pts = scatterWithR(rng, {
+        n: 10, xbar: rng.step(12, 24, 2), sx: rng.pick([3, 4, 5]),
+        ybar: rng.step(40, 70, 5), sy: rng.pick([6, 8, 10]), r
+      });
       const other = c.dir === 'positive' ? 'negative' : 'positive';
       const wrongStrength = s === 'strong' ? 'weak' : 'strong';
       const correct = `A ${s}, ${c.dir} linear association`;
@@ -211,12 +266,13 @@ export const bivariate1 = [
         `A ${c.dir} association of ${num(mag * 100, 0)}% strength`
       ]);
       return {
-        prompt: `<p>A scatterplot of ${c.y} against ${c.x} has no obvious curvature, and ${math(`r <span class="op">=</span> ${tidy(r)}`, `r equals ${r}`)}.</p>
+        prompt: `<p>The scatterplot shows ${c.y} against ${c.x} for ${pts.length} observations. The correlation coefficient is ${math(`r <span class="op">=</span> ${tidy(r)}`, `r equals ${r}`)}.</p>
+                 ${scatterPlot({ points: pts, xLabel: c.x, yLabel: c.y, title: `${c.y} against ${c.x}` })}
                  <p class="mb-0">Which description is correct?</p>`,
         formulaIds: [],
         steps: [
           { t: 'Read the direction from the sign',
-            h: `<p>r is ${sign > 0 ? 'positive' : 'negative'}, so as ${c.x} increases, ${c.y} tends to <strong>${sign > 0 ? 'increase' : 'decrease'}</strong> — a ${c.dir} association.</p>` },
+            h: `<p>r is ${sign > 0 ? 'positive' : 'negative'}, so as ${c.x} increases, ${c.y} tends to <strong>${sign > 0 ? 'increase' : 'decrease'}</strong>. A ${c.dir} association.</p>` },
           { t: 'Read the strength from the size',
             h: `<p>Use ${math('|r|')} against the usual bands:</p>
                 <ul class="mb-0">
@@ -227,10 +283,10 @@ export const bivariate1 = [
                 </ul>
                 <p class="mt-2 mb-0">${math(`|r| <span class="op">=</span> ${tidy(mag)}`)} → <strong>${s}</strong>.</p>` },
           { t: 'State the form',
-            h: `<p>No curvature is described, so the form is <strong>linear</strong> — which is what makes r appropriate in the first place.</p>` }
+            h: `<p>No curvature is described, so the form is <strong>linear</strong>, which is what makes r appropriate in the first place.</p>` }
         ],
         answer: correct + '.',
-        pitfall: 'r is not a percentage. "r = 0.9" is not a "90% correlation" — the percentage figure comes from R², not r.',
+        pitfall: 'r is not a percentage. "r = 0.9" is not a "90% correlation". The percentage figure comes from R², not r.',
         check: { type: 'choice', options, correct: options.indexOf(correct) }
       };
     }
@@ -251,7 +307,7 @@ export const bivariate1 = [
           { t: 'Quote both conditional percentages',
             h: `<p>${c.a}: ${pA}%. ${c.b}: ${pB}%. Both are percentages <em>within</em> the groups made by the explanatory variable, so they can be compared directly.</p>` },
           { t: 'Quantify the difference',
-            h: `<p>${math(`${pA} <span class="op">−</span> ${pB} <span class="op">=</span> ${pA - pB}`)} percentage points — a substantial, systematic gap rather than a small fluctuation.</p>` },
+            h: `<p>${math(`${pA} <span class="op">−</span> ${pB} <span class="op">=</span> ${pA - pB}`)} percentage points. A substantial, systematic gap rather than a small fluctuation.</p>` },
           { t: 'State the association in context',
             h: `<p>"There is an association between ${c.ev} and whether ${c.unit} ${c.rv}: ${c.a.toLowerCase()} are ${pA - pB} percentage points more likely to ${c.rv} than ${c.b.toLowerCase()}."</p>` },
           { t: 'Add the limitation',
@@ -282,12 +338,12 @@ export const bivariate2 = [
       const ybar = rng.step(30, 90, 2);
       const m = round(r * (sy / sx), 4);
       const cc = round(ybar - m * xbar, 4);
+      const pts = scatterWithR(rng, { n: 9, xbar, sx, ybar, sy, r });
       return {
-        prompt: `<p>For ${c.x} (x) and ${c.y} (y), a sample gives:</p>
-          ${table(['Statistic', 'Value'], [
-            ['x̄', tidy(xbar)], ['ȳ', tidy(ybar)],
-            ['s<sub>x</sub>', tidy(sx)], ['s<sub>y</sub>', tidy(sy)], ['r', tidy(r)]
-          ])}
+        prompt: `<p>The scatterplot shows ${c.y} against ${c.x}, and the sample gives these summary statistics.</p>
+          ${scatterPlot({ points: pts, xLabel: `${c.x} (x)`, yLabel: `${c.y} (y)`, title: `${c.y} against ${c.x}`, showTable: false })}
+          ${table(['Statistic', 'x̄', 'ȳ', 's<sub>x</sub>', 's<sub>y</sub>', 'r'],
+                  [['Value', tidy(xbar), tidy(ybar), tidy(sx), tidy(sy), tidy(r)]])}
           <p class="mb-0">Determine the equation of the least-squares line.</p>`,
         formulaIds: ['slope', 'intercept', 'linear-equation'],
         steps: [
@@ -327,7 +383,7 @@ export const bivariate2 = [
           { t: 'Substitute',
             h: `<p>${math(`residual <span class="op">=</span> ${tidy(obs)} <span class="op">−</span> ${tidy(pred)} <span class="op">=</span> ${tidy(res)}`, `residual equals ${obs} minus ${pred} equals ${res}`)}</p>` },
           { t: 'Interpret the sign',
-            h: `<p class="mb-0">The residual is ${res > 0 ? 'positive' : 'negative'}, so the observed value lies <strong>${res > 0 ? 'above' : 'below'}</strong> the fitted line — the model <strong>${res > 0 ? 'under' : 'over'}-predicted</strong> by ${math(tidy(Math.abs(res)))} units.</p>` }
+            h: `<p class="mb-0">The residual is ${res > 0 ? 'positive' : 'negative'}, so the observed value lies <strong>${res > 0 ? 'above' : 'below'}</strong> the fitted line. The model <strong>${res > 0 ? 'under' : 'over'}-predicted</strong> by ${math(tidy(Math.abs(res)))} units.</p>` }
         ],
         answer: `Residual = ${tidy(res)}; the point lies ${res > 0 ? 'above' : 'below'} the least-squares line.`,
         pitfall: 'Reversing the subtraction flips the sign and reverses the interpretation. Observed − predicted, every time.',
@@ -348,6 +404,10 @@ export const bivariate2 = [
       const pred = round(m * x + cc, 3);
       const res = round(rng.sign() * rng.float(1, 5, 1), 1);
       const obs = round(pred + res, 3);
+      const residuals = Array.from({ length: 9 }, (_, i) => ({
+        x: round(x - 4 + i, 1), r: round(rng.float(-4.5, 4.5, 1), 1)
+      }));
+      residuals[4] = { x, r: res };
       return {
         prompt: `<p>The least-squares line relating ${c.y} (y) to ${c.x} (x) is ${math(`ŷ <span class="op">=</span> ${tidy(m)}x <span class="op">+</span> ${tidy(cc)}`, `y hat equals ${m} x plus ${cc}`)}.</p>
                  <p class="mb-0">One observation is (${tidy(x)}, ${tidy(obs)}). Calculate its residual.</p>`,
@@ -358,7 +418,9 @@ export const bivariate2 = [
           { t: 'Subtract from the observed value', formulaId: 'residual',
             h: `<p>${math(`residual <span class="op">=</span> ${tidy(obs)} <span class="op">−</span> ${tidy(pred)} <span class="op">=</span> ${tidy(res)}`, `residual equals ${obs} minus ${pred} equals ${res}`)}</p>` },
           { t: 'Say what it means',
-            h: `<p class="mb-0">The point sits ${math(tidy(Math.abs(res)))} units <strong>${res > 0 ? 'above' : 'below'}</strong> the line. A residual plot of many such values should show a random band around zero if a linear model is appropriate.</p>` }
+            h: `<p>The point sits ${math(tidy(Math.abs(res)))} units <strong>${res > 0 ? 'above' : 'below'}</strong> the line.</p>
+                <p>Plotting every residual this way is how you check the model. A random band around zero supports a straight line; a curve means a straight line was the wrong shape.</p>
+                ${residualPlot({ points: residuals, xLabel: 'x', title: 'Residual plot for the full data set' })}` }
         ],
         answer: `Predicted ${tidy(pred)}; residual = ${tidy(res)} (the point lies ${res > 0 ? 'above' : 'below'} the line).`,
         pitfall: 'Round only at the end. Rounding the prediction first can shift the residual noticeably.',
@@ -390,10 +452,10 @@ export const bivariate2 = [
             h: `<p>The data cover ${math(`${lo} <span class="op">≤</span> x <span class="op">≤</span> ${hi}`)}, and ${math(`x <span class="op">=</span> ${x}`)} lies <strong>${outside ? 'outside' : 'inside'}</strong> that range.</p>` },
           { t: 'Name it and judge reliability',
             h: `<p class="mb-0">${outside
-              ? 'This is <strong>extrapolation</strong>. It assumes the linear pattern continues beyond the data, which was never observed — the relationship may change shape, so treat the value as unreliable.'
-              : 'This is <strong>interpolation</strong>, made inside the observed range, so it is the more reliable kind of prediction — provided the residual plot supported a linear model.'}</p>` }
+              ? 'This is <strong>extrapolation</strong>. It assumes the linear pattern continues beyond the data, which was never observed. The relationship may change shape, so treat the value as unreliable.'
+              : 'This is <strong>interpolation</strong>, made inside the observed range, so it is the more reliable kind of prediction. Provided the residual plot supported a linear model.'}</p>` }
         ],
-        answer: `${math(`ŷ <span class="op">=</span> ${tidy(yhat)}`)} — ${outside ? 'extrapolation, so treat it as unreliable' : 'interpolation, so it is reasonably reliable'}.`,
+        answer: `${math(`ŷ <span class="op">=</span> ${tidy(yhat)}`)}. This is ${outside ? 'extrapolation, so treat it as unreliable' : 'interpolation, so it is reasonably reliable'}.`,
         pitfall: 'Producing the number but not naming interpolation or extrapolation leaves the reliability mark on the table.',
         check: { type: 'number', value: yhat, tol: 0.05, label: 'predicted y' }
       };
@@ -425,7 +487,7 @@ export const bivariate2 = [
           { t: 'Keep the wording predictive',
             h: `<p>The model predicts an average change. It does not force every case to change by exactly ${tidy(Math.abs(m))}, and it does not establish cause.</p>` },
           { t: 'Interpret the intercept too',
-            h: `<p class="mb-0">${math(`c <span class="op">=</span> ${tidy(cc)}`)} is the predicted ${c.y} when ${c.x} is 0. Say so only if ${math('x <span class="op">=</span> 0')} is meaningful for this context — otherwise note that it lies outside the sensible domain.</p>` }
+            h: `<p class="mb-0">${math(`c <span class="op">=</span> ${tidy(cc)}`)} is the predicted ${c.y} when ${c.x} is 0. Say so only if ${math('x <span class="op">=</span> 0')} is meaningful for this context. Otherwise note that it lies outside the sensible domain.</p>` }
         ],
         answer: correct,
         pitfall: 'The words "causes" and "exactly" both cost marks. A regression slope is a predicted average change.',
@@ -457,11 +519,11 @@ export const bivariate2 = [
           { t: 'Name why association is not causation',
             h: `<p>Observational data admit three rival explanations: coincidence, reverse causation, and a lurking variable influencing both.</p>` },
           { t: 'Give the lurking variable',
-            h: `<p>Here the plausible lurking variable is <strong>${p.lurk}</strong> — ${p.why}.</p>` },
+            h: `<p>Here the plausible lurking variable is <strong>${p.lurk}</strong>, because ${p.why}.</p>` },
           { t: 'State the evaluation',
             h: `<p class="mb-0">The causal claim is not justified. Establishing cause would need a controlled experiment in which ${p.a} were manipulated while other factors were held constant.</p>` }
         ],
-        answer: `The claim is not justified. ${p.lurk.charAt(0).toUpperCase() + p.lurk.slice(1)} is a plausible lurking variable — ${p.why} — so association here does not demonstrate causation.`,
+        answer: `The claim is not justified. ${p.lurk.charAt(0).toUpperCase() + p.lurk.slice(1)} is a plausible lurking variable, because ${p.why}. So association here does not demonstrate causation.`,
         pitfall: 'Saying only "correlation is not causation" is worth little. Name a specific lurking variable and explain how it produces both effects.',
         check: { type: 'open' }
       };
@@ -483,8 +545,9 @@ export const timeSeries = [
       const window = vals.slice(at - 2, at + 1);
       const mm = round(window.reduce((a, b) => a + b, 0) / 3, 2);
       return {
-        prompt: `<p>Five consecutive readings of ${c.thing} (${c.unit}) are:</p>
-          ${table(['Time', '1', '2', '3', '4', '5'], [['Value', ...vals]])}
+        prompt: `<p>Five consecutive readings of ${c.thing}, measured in ${c.unit}.</p>
+          ${timeSeriesPlot({ values: vals, labels: ['1', '2', '3', '4', '5'],
+            xLabel: 'time period', yLabel: c.unit, title: `${c.thing} over five periods` })}
           <p class="mb-0">Calculate the 3-point moving mean centred at time ${at}.</p>`,
         formulaIds: ['moving-average'],
         steps: [
@@ -513,14 +576,15 @@ export const timeSeries = [
       const sorted = vals.slice().sort((a, b) => a - b);
       const med = sorted[2];
       return {
-        prompt: `<p>Five consecutive readings of ${c.thing} (${c.unit}) are:</p>
-          ${table(['Time', '1', '2', '3', '4', '5'], [['Value', ...vals]])}
+        prompt: `<p>Five consecutive readings of ${c.thing}, measured in ${c.unit}.</p>
+          ${timeSeriesPlot({ values: vals, labels: ['1', '2', '3', '4', '5'],
+            xLabel: 'time period', yLabel: c.unit, title: `${c.thing} over five periods` })}
           <p class="mb-0">Calculate the 5-point moving median centred at time 3.</p>`,
         formulaIds: ['median'],
         steps: [
           { t: 'Order the window', formulaId: 'median',
             h: `<p>Sort the five values: ${sorted.join(', ')}.</p>
-                <p class="text-muted mb-0">The median needs ordered data — the time order is irrelevant once the window is chosen.</p>` },
+                <p class="text-muted mb-0">The median needs ordered data. The time order is irrelevant once the window is chosen.</p>` },
           { t: 'Take the middle value',
             h: `<p>With ${math('n <span class="op">=</span> 5')}, the median is the ${math(`${frac('5 <span class="op">+</span> 1', '2')} <span class="op">=</span> 3`)}rd ordered value: <strong>${med}</strong>.</p>` },
           { t: 'Place it at the centre',
@@ -543,9 +607,16 @@ export const timeSeries = [
       const actual = round(avg * si, 0);
       const exact = round(actual / avg, 4);
       const seasonName = c.season === 'quarter' ? `Quarter ${rng.int(1, 4)}` : rng.pick(['January', 'April', 'July', 'October']);
+      const series = seasonalSeries(rng, {
+        quarters: 8, base: avg, growth: rng.float(-2, 6, 1),
+        indices: rng.shuffle([si, round(2 - si, 2), rng.float(0.85, 1.15, 2), 1]).slice(0, 4)
+      });
       return {
-        prompt: `<p>For ${c.thing}, the value recorded in ${seasonName} was <strong>${actual}</strong> ${c.unit}, and the average across all ${c.season}s of that year was <strong>${avg}</strong> ${c.unit}.</p>
-                 <p class="mb-0">Calculate the seasonal index for ${seasonName}, and interpret it.</p>`,
+        prompt: `<p>The plot shows ${c.thing} over two years. Notice the shape repeating each year: that is seasonality.</p>
+          ${series ? timeSeriesPlot({ values: series.values, labels: series.labels,
+            xLabel: 'quarter', yLabel: c.unit, title: `${c.thing}, two years` }) : ''}
+          <p>In ${seasonName} the value recorded was <strong>${actual}</strong> ${c.unit}, and the average across all ${c.season}s of that year was <strong>${avg}</strong> ${c.unit}.</p>
+          <p class="mb-0">Calculate the seasonal index for ${seasonName}, and interpret it.</p>`,
         formulaIds: ['seasonal-index'],
         steps: [
           { t: 'State the rule', formulaId: 'seasonal-index',
@@ -555,7 +626,7 @@ export const timeSeries = [
           { t: 'Interpret against 1',
             h: `<p class="mb-0">The index is ${exact > 1 ? 'above' : 'below'} 1, so ${seasonName} is typically <strong>${exact > 1 ? `${num((exact - 1) * 100, 1)}% above` : `${num((1 - exact) * 100, 1)}% below`}</strong> the ${c.season}ly average. Across a full cycle the indices sum to the number of ${c.season}s.</p>` }
         ],
-        answer: `Seasonal index = ${tidy(exact)} — ${seasonName} runs about ${num(Math.abs(exact - 1) * 100, 1)}% ${exact > 1 ? 'above' : 'below'} average.`,
+        answer: `Seasonal index = ${tidy(exact)}. ${seasonName} runs about ${num(Math.abs(exact - 1) * 100, 1)}% ${exact > 1 ? 'above' : 'below'} average.`,
         pitfall: 'Dividing the average by the actual value inverts the index and reverses the interpretation.',
         check: { type: 'number', value: exact, tol: 0.005, label: 'seasonal index' }
       };
@@ -577,14 +648,14 @@ export const timeSeries = [
         steps: [
           { t: 'Choose the operation', formulaId: 'deseasonalise',
             h: `<p>${math(`deseasonalised <span class="op">=</span> ${frac('actual value', 'seasonal index')}`)}</p>
-                <p class="text-muted mb-0">Seasonality is multiplicative, so you remove it by dividing — never by multiplying.</p>` },
+                <p class="text-muted mb-0">Seasonality is multiplicative, so you remove it by dividing, never by multiplying.</p>` },
           { t: 'Substitute',
             h: `<p>${math(`${frac(actual, tidy(si))} <span class="op">=</span> ${tidy(des)}`, `${actual} over ${si} equals ${des}`)}</p>` },
           { t: 'Sense-check the direction',
-            h: `<p class="mb-0">The index is ${si > 1 ? 'above' : 'below'} 1, so the deseasonalised figure should be <strong>${si > 1 ? 'lower' : 'higher'}</strong> than ${actual} — and ${tidy(des)} is.</p>` }
+            h: `<p class="mb-0">The index is ${si > 1 ? 'above' : 'below'} 1, so the deseasonalised figure should be <strong>${si > 1 ? 'lower' : 'higher'}</strong> than ${actual}, and ${tidy(des)} is.</p>` }
         ],
         answer: `Deseasonalised value ≈ ${tidy(des)} ${c.unit}.`,
-        pitfall: 'Multiplying by the index does the opposite of what is asked — it reseasonalises.',
+        pitfall: 'Multiplying by the index does the opposite of what is asked. It reseasonalises.',
         check: { type: 'number', value: des, tol: 0.05, label: 'deseasonalised value' }
       };
     }
@@ -598,9 +669,17 @@ export const timeSeries = [
       const trend = rng.step(120, 400, 10);
       const si = rng.pick([0.68, 0.78, 0.84, 1.15, 1.22, 1.36]);
       const fc = round(trend * si, 2);
+      const series = seasonalSeries(rng, {
+        quarters: 8, base: trend * 0.8, growth: rng.float(1, 8, 1),
+        indices: rng.shuffle([si, round(2 - si, 2), 1.05, 0.95]).slice(0, 4)
+      });
       return {
-        prompt: `<p>A trend line fitted to deseasonalised ${c.thing} forecasts <strong>${trend}</strong> ${c.unit} for a future ${c.season}. The seasonal index for that ${c.season} is <strong>${tidy(si)}</strong>.</p>
-                 <p class="mb-0">Determine the seasonal forecast, and comment on its reliability.</p>`,
+        prompt: `<p>The plot shows recorded ${c.thing} against the deseasonalised figures the trend line was fitted to. The seasonal swing is in the solid series; the dashed series has it removed.</p>
+          ${series ? timeSeriesPlot({ values: series.values, labels: series.labels,
+            xLabel: 'quarter', yLabel: c.unit, title: `${c.thing}: recorded and deseasonalised`,
+            trend: { values: series.deseasonalised, label: 'deseasonalised' } }) : ''}
+          <p>The trend line forecasts <strong>${trend}</strong> ${c.unit} for a future ${c.season}, and the seasonal index for that ${c.season} is <strong>${tidy(si)}</strong>.</p>
+          <p class="mb-0">Determine the seasonal forecast, and comment on its reliability.</p>`,
         formulaIds: ['reseasonalise'],
         steps: [
           { t: 'Put the seasonality back', formulaId: 'reseasonalise',
@@ -660,8 +739,18 @@ export const timeSeries = [
       const si = rng.pick([0.72, 0.86, 1.14, 1.28, 1.35]);
       const trend = round(m * t + cc, 3);
       const fc = round(trend * si, 2);
+      const series = { observed: [], fitted: [], labels: [] };
+      for (let i = 1; i <= 8; i++) {
+        series.labels.push(String(i));
+        series.fitted.push(round(m * i + cc, 1));
+        series.observed.push(round(m * i + cc + rng.float(-9, 9, 1), 1));
+      }
       return {
-        prompt: `<p>Deseasonalised ${c.thing} follow the trend line ${math(`ŷ <span class="op">=</span> ${tidy(m)}t <span class="op">+</span> ${tidy(cc)}`, `y hat equals ${m} t plus ${cc}`)}, where t is the quarter number.</p>
+        prompt: `<p>The plot shows deseasonalised ${c.thing} with the fitted trend line.</p>
+          ${series ? timeSeriesPlot({ values: series.observed, labels: series.labels,
+            xLabel: 'quarter number t', yLabel: c.unit, title: `Deseasonalised ${c.thing} with trend line`,
+            trend: { values: series.fitted, label: 'trend line' } }) : ''}
+          <p>The trend line is ${math(`ŷ <span class="op">=</span> ${tidy(m)}t <span class="op">+</span> ${tidy(cc)}`, `y hat equals ${m} t plus ${cc}`)}, where t is the quarter number.</p>
                  <p class="mb-0">Quarter number ${t} has a seasonal index of ${tidy(si)}. Forecast the actual value for that quarter, and justify how much confidence to place in it.</p>`,
         formulaIds: ['linear-equation'],
         steps: [

@@ -4,7 +4,7 @@
  * The capability only exists when the page is open inside a Claude viewer. On a
  * plain static host (GitHub Pages, a local server, a file on a USB stick)
  * `window.claude` is absent, `use()` resolves null, and the panel never appears
- * — everything else on the page works exactly the same.
+ *. Everything else on the page works exactly the same.
  *
  * Model output is treated as untrusted text: it is escaped, then a small, fixed
  * set of formatting marks is applied. No HTML from the model ever reaches the DOM.
@@ -69,7 +69,7 @@ function inline(s) {
 function framing(topic, teaching) {
   const targets = topic.targets.map(t => `- ${t}`).join('\n');
   const knowledge = topic.knowledge.map(k => `- ${k.term}: ${k.text}`).join('\n');
-  const bank = topic.bank.map(b => `- ${b.rule} — ${b.use}`).join('\n');
+  const bank = topic.bank.map(b => `- ${b.rule}: ${b.use}`).join('\n');
   const errors = topic.errors.map(e => `- ${e}`).join('\n');
   const pitfalls = (teaching?.misconceptions || [])
     .map(m => `- Students often think: ${m.wrong} Correction: ${m.right}`).join('\n');
@@ -108,7 +108,7 @@ HOW TO ANSWER:
 
 /**
  * Mounts the panel into `container`. Resolves to true if the tutor is available.
- * Safe to call when the capability is missing — it simply renders nothing.
+ * Safe to call when the capability is missing. It simply renders nothing.
  */
 export async function mountTutor(container, topic, teaching) {
   if (!container) return false;
@@ -134,7 +134,7 @@ export async function mountTutor(container, topic, teaching) {
         <button type="button" class="btn btn--ghost btn--sm" id="tutor-clear">Clear</button>
       </div>
       <p class="text-muted tutor__note">Answers come from Claude, using this topic's material. Check anything
-        surprising against the worked example above &mdash; a tutor can be wrong.</p>
+        surprising against the worked example above. A tutor can be wrong.</p>
       <div class="chip-row" id="tutor-suggestions">
         ${suggestions.map((s, i) => `<button type="button" class="chip-btn" data-q="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('')}
       </div>

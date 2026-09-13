@@ -90,10 +90,10 @@ export const sequences = [
                    ${math(`${frac('t<sub>3</sub>', 't<sub>2</sub>')} <span class="op">=</span> ${tidy(round(terms[2] / terms[1], 4))}`)}</p>
                 <p class="mb-0">${isArith ? 'These differ, so the sequence is not geometric.' : 'These match, so the ratios are constant.'}</p>` },
           { t: 'Name the sequence', formulaId: isArith ? 'arithmetic' : 'geometric',
-            h: `<p class="mb-0">The sequence is <strong>${kind}</strong> with ${isArith ? math(`d <span class="op">=</span> ${tidy(param)}`) : math(`r <span class="op">=</span> ${tidy(param)}`)}${!isArith ? ` — a ${param > 1 ? 'growth' : 'decay'} sequence, since r is ${param > 1 ? 'greater than' : 'between 0 and'} 1.` : '.'}</p>` }
+            h: `<p class="mb-0">The sequence is <strong>${kind}</strong> with ${isArith ? math(`d <span class="op">=</span> ${tidy(param)}`) : math(`r <span class="op">=</span> ${tidy(param)}`)}${!isArith ? `. A ${param > 1 ? 'growth' : 'decay'} sequence, since r is ${param > 1 ? 'greater than' : 'between 0 and'} 1.` : '.'}</p>` }
         ],
         answer: `${kind.charAt(0).toUpperCase() + kind.slice(1)}, ${isArith ? 'd' : 'r'} = ${tidy(param)}.`,
-        pitfall: 'Repeated percentage change is geometric, not arithmetic — the step size grows or shrinks with the terms.',
+        pitfall: 'Repeated percentage change is geometric, not arithmetic. The step size grows or shrinks with the terms.',
         check: { type: 'number', value: param, tol: 0.005, label: isArith ? 'common difference d' : 'common ratio r' }
       };
     }
@@ -114,7 +114,7 @@ export const sequences = [
         steps: [
           { t: 'Select the rule', formulaId: 'arithmetic',
             h: `<p>${math('t<sub>n</sub> <span class="op">=</span> t<sub>1</sub> <span class="op">+</span> (n <span class="op">−</span> 1)d')}</p>` },
-          { t: 'Substitute — note the n − 1',
+          { t: 'Substitute. Note the n − 1',
             h: `<p>${math(`t<sub>${n}</sub> <span class="op">=</span> ${t1} <span class="op">+</span> (${n} <span class="op">−</span> 1) <span class="op">×</span> ${tidy(d)}`, `t sub ${n} equals ${t1} plus open bracket ${n} minus 1 close bracket times ${d}`)}</p>
                 <p class="text-muted mb-0">Because ${math(`t<sub>1</sub>`)} is the starting value, only ${n - 1} steps of size ${tidy(d)} have been taken by term ${n}.</p>` },
           { t: 'Evaluate',
@@ -172,14 +172,14 @@ export const sequences = [
         formulaIds: ['geom-recurrence'],
         steps: [
           { t: 'Check the differences first',
-            h: `<p>${math(`${tidy(terms[1])} <span class="op">−</span> ${tidy(terms[0])} <span class="op">=</span> ${tidy(round(terms[1] - terms[0], 4))}`)} but ${math(`${tidy(terms[2])} <span class="op">−</span> ${tidy(terms[1])} <span class="op">=</span> ${tidy(round(terms[2] - terms[1], 4))}`)} — not constant, so it is not arithmetic.</p>` },
+            h: `<p>${math(`${tidy(terms[1])} <span class="op">−</span> ${tidy(terms[0])} <span class="op">=</span> ${tidy(round(terms[1] - terms[0], 4))}`)} but ${math(`${tidy(terms[2])} <span class="op">−</span> ${tidy(terms[1])} <span class="op">=</span> ${tidy(round(terms[2] - terms[1], 4))}`)}, not constant, so it is not arithmetic.</p>` },
           { t: 'Find the common ratio',
-            h: `<p>${math(`${frac(tidy(terms[1]), tidy(terms[0]))} <span class="op">=</span> ${tidy(r)}`)} and ${math(`${frac(tidy(terms[2]), tidy(terms[1]))} <span class="op">=</span> ${tidy(r)}`)} — constant, so it is geometric with ${math(`r <span class="op">=</span> ${tidy(r)}`)}.</p>` },
+            h: `<p>${math(`${frac(tidy(terms[1]), tidy(terms[0]))} <span class="op">=</span> ${tidy(r)}`)} and ${math(`${frac(tidy(terms[2]), tidy(terms[1]))} <span class="op">=</span> ${tidy(r)}`)}. Constant, so it is geometric with ${math(`r <span class="op">=</span> ${tidy(r)}`)}.</p>` },
           { t: 'State the recurrence with its seed', formulaId: 'geom-recurrence',
             h: `<p>${math(`t<sub>1</sub> <span class="op">=</span> ${tidy(t1)}, &nbsp; t<sub>n+1</sub> <span class="op">=</span> ${tidy(r)}t<sub>n</sub>`, `t sub 1 equals ${t1}, t sub n plus 1 equals ${r} times t sub n`)}</p>
-                <p class="text-muted mb-0">A recurrence without its starting value defines nothing — the seed is part of the answer.</p>` },
+                <p class="text-muted mb-0">A recurrence without its starting value defines nothing. The seed is part of the answer.</p>` },
           { t: 'Describe the behaviour',
-            h: `<p class="mb-0">Since ${math(`r <span class="op">=</span> ${tidy(r)}`)} is ${r < 1 ? 'between 0 and 1, the terms decay — a ' + tidy(round((1 - r) * 100, 2)) + '% reduction each step' : 'greater than 1, the terms grow — a ' + tidy(round((r - 1) * 100, 2)) + '% increase each step'}.</p>` }
+            h: `<p class="mb-0">Since ${math(`r <span class="op">=</span> ${tidy(r)}`)} is ${r < 1 ? 'between 0 and 1, the terms decay. A ' + tidy(round((1 - r) * 100, 2)) + '% reduction each step' : 'greater than 1, the terms grow. A ' + tidy(round((r - 1) * 100, 2)) + '% increase each step'}.</p>` }
         ],
         answer: math(`t<sub>1</sub> <span class="op">=</span> ${tidy(t1)}, &nbsp; t<sub>n+1</sub> <span class="op">=</span> ${tidy(r)}t<sub>n</sub>`),
         pitfall: 'Omitting the initial value. A recurrence relation is only complete when the seed is stated with it.',
@@ -210,7 +210,7 @@ export const sequences = [
             h: `<p>${math(`t<sub>n</sub> <span class="op">=</span> ${tidy(v0)}(${tidy(r)})<sup>(n <span class="op">−</span> 1)</sup>`, `t sub n equals ${v0} times ${r} to the power of n minus 1`)}, with ${math('t<sub>1</sub>')} the value at the end of year 1.</p>` },
           { t: 'Substitute the year',
             h: `<p>${math(`t<sub>${yr}</sub> <span class="op">=</span> ${tidy(v0)}(${tidy(r)})<sup>${yr - 1}</sup>`, `t sub ${yr} equals ${v0} times ${r} to the power of ${yr - 1}`)}</p>
-                <p class="text-muted mb-0">Year ${yr} is ${yr - 1} reductions after year 1 — not ${yr}.</p>` },
+                <p class="text-muted mb-0">Year ${yr} is ${yr - 1} reductions after year 1, not ${yr}.</p>` },
           { t: 'Evaluate and round to cents',
             h: `<p>${math(`t<sub>${yr}</sub> <span class="op">=</span> ${money(val)}`)}</p>` }
         ],
@@ -247,7 +247,7 @@ export const sequences = [
           { t: 'Compare',
             h: `<p>${math(`${tidy(Math.max(A, B))} <span class="op">></span> ${tidy(Math.min(A, B))}`)}, so <strong>Model ${bigger}</strong> is larger at term ${n} by ${math(tidy(round(Math.abs(B - A), 2)))} units.</p>` },
           { t: 'Justify with the structure',
-            h: `<p class="mb-0">Model A adds a fixed ${d} units each period, so its graph is a set of discrete points on a straight line. Model B multiplies by ${tidy(r)}, so each increase is larger than the last. Exponential growth eventually overtakes any linear growth — the only question is whether it has done so by term ${n}${bigger === 'A' ? ', and here it has not yet' : ', and here it has'}.</p>` }
+            h: `<p class="mb-0">Model A adds a fixed ${d} units each period, so its graph is a set of discrete points on a straight line. Model B multiplies by ${tidy(r)}, so each increase is larger than the last. Exponential growth eventually overtakes any linear growth. The only question is whether it has done so by term ${n}${bigger === 'A' ? ', and here it has not yet' : ', and here it has'}.</p>` }
         ],
         answer: `Model A = ${tidy(A)}; Model B ≈ ${tidy(B)}. Model ${bigger} is larger at term ${n}.`,
         pitfall: 'Comparing the two at term 1 or term 2 and generalising. Exponential growth starts slowly and then overtakes.',
@@ -281,7 +281,7 @@ export const earthGeometry = [
                 <p class="text-muted mb-0">Dropping the ${hemi} loses the hemisphere and can flip a later distance calculation.</p>` }
         ],
         answer: math(`${tidy(dec)}°${hemi}`),
-        pitfall: 'Dividing by 100 instead of 60 — minutes are sixtieths, not hundredths.',
+        pitfall: 'Dividing by 100 instead of 60. Minutes are sixtieths, not hundredths.',
         check: { type: 'number', value: dec, tol: 0.005, label: 'decimal degrees' }
       };
     }
@@ -311,7 +311,7 @@ export const earthGeometry = [
         formulaIds: ['meridian-distance'],
         steps: [
           { t: 'Confirm it is a meridian problem', formulaId: 'meridian-distance',
-            h: `<p>Both longitudes are ${lon}°E, so the two places lie on the same meridian — a great circle. Only the latitude difference matters, and no cosine factor is involved.</p>` },
+            h: `<p>Both longitudes are ${lon}°E, so the two places lie on the same meridian. A great circle. Only the latitude difference matters, and no cosine factor is involved.</p>` },
           { t: 'Find the angular distance',
             h: `<p>${cross
               ? `The places are in <strong>opposite</strong> hemispheres, so <em>add</em> the latitudes: ${math(`${latA} <span class="op">+</span> ${latB} <span class="op">=</span> ${safeAngular}°`)}.`
@@ -355,7 +355,7 @@ export const earthGeometry = [
             h: `<p class="mb-0">${math(`D <span class="op">=</span> ${tidy(D)} <span class="op">≈</span> ${num(Math.round(D), 0)}`)} km.</p>` }
         ],
         answer: `D ≈ ${num(Math.round(D), 0)} km.`,
-        pitfall: 'Using the same-meridian formula on a parallel overstates the distance — everywhere except the equator.',
+        pitfall: 'Using the same-meridian formula on a parallel overstates the distance. Everywhere except the equator.',
         check: { type: 'number', value: D, tol: 3, label: 'distance (km)', unit: 'km' }
       };
     }

@@ -74,7 +74,7 @@ export const finance1 = [
           { t: 'Substitute',
             h: `<p>${math(`i<sub>effective</sub> <span class="op">=</span> (1 <span class="op">+</span> ${tidy(i, 8)})<sup>${f.k}</sup> <span class="op">−</span> 1 <span class="op">=</span> ${tidy(eff, 8)}`, `i effective equals one plus ${i} to the power of ${f.k} minus 1 equals ${eff}`)}</p>` },
           { t: 'Express as a percentage',
-            h: `<p class="mb-0">${math(`${tidy(eff, 8)} <span class="op">×</span> 100 <span class="op">≈</span> ${num(eff * 100, 3)}%`)} per annum — higher than the ${tidy(annual)}% nominal rate, because interest earned within the year itself earns interest.</p>` }
+            h: `<p class="mb-0">${math(`${tidy(eff, 8)} <span class="op">×</span> 100 <span class="op">≈</span> ${num(eff * 100, 3)}%`)} per annum. Higher than the ${tidy(annual)}% nominal rate, because interest earned within the year itself earns interest.</p>` }
         ],
         answer: `Effective annual rate ≈ ${num(eff * 100, 3)}%.`,
         pitfall: 'Forgetting the "− 1". Without it you have the annual growth multiplier, not the rate.',
@@ -143,7 +143,7 @@ export const finance1 = [
             h: `<p>${math(`A<sub>1</sub> <span class="op">=</span> ${tidy(r, 8)} <span class="op">×</span> ${tidy(P)} <span class="op">−</span> ${tidy(d)} <span class="op">=</span> ${money(A1)}`, `A sub 1 equals ${round(A1, 2)}`)}</p>` },
           { t: 'Calculate the second balance',
             h: `<p class="mb-0">${math(`A<sub>2</sub> <span class="op">=</span> ${tidy(r, 8)} <span class="op">×</span> ${tidy(round(A1, 6))} <span class="op">−</span> ${tidy(d)} <span class="op">=</span> ${money(A2)}`, `A sub 2 equals ${round(A2, 2)}`)}</p>
-                <p class="text-muted mb-0">Carry the unrounded ${math('A<sub>1</sub>')} into the next line — rounding each balance to the cent drifts over a full loan term.</p>` }
+                <p class="text-muted mb-0">Carry the unrounded ${math('A<sub>1</sub>')} into the next line. Rounding each balance to the cent drifts over a full loan term.</p>` }
         ],
         answer: `${math(`A<sub>n+1</sub> <span class="op">=</span> ${tidy(r, 8)}A<sub>n</sub> <span class="op">−</span> ${tidy(d)}`)}, ${math(`A<sub>0</sub> <span class="op">=</span> ${tidy(P)}`)}; ${math('A<sub>2</sub>')} = ${money(A2)}.`,
         pitfall: 'Subtracting the repayment before adding interest gives a different (and, under the syllabus model, wrong) balance.',
@@ -212,7 +212,7 @@ export const finance1 = [
           { t: 'Subtract the amount borrowed',
             h: `<p>${math(`I <span class="op">=</span> ${money(total)} <span class="op">−</span> ${money(P, 0)} <span class="op">=</span> ${money(interest)}`, `interest equals ${total} minus ${P} equals ${interest}`)}</p>` },
           { t: 'Interpret the result',
-            h: `<p class="mb-0">Interest is ${num(interest / P * 100, 1)}% of the amount borrowed across the full ${years}-year term. Extending the term lowers each repayment but raises this total — the comparison a borrower actually needs.</p>` }
+            h: `<p class="mb-0">Interest is ${num(interest / P * 100, 1)}% of the amount borrowed across the full ${years}-year term. Extending the term lowers each repayment but raises this total. The comparison a borrower actually needs.</p>` }
         ],
         answer: `Total repaid ${money(total)}; total interest ${money(interest)}.`,
         pitfall: 'Multiplying the repayment by the number of years instead of the number of repayments.',
@@ -250,7 +250,7 @@ export const finance2 = [
             h: `<p>${math(`A<sub>1</sub> <span class="op">=</span> ${tidy(r, 8)} <span class="op">×</span> 0 <span class="op">+</span> ${tidy(d)} <span class="op">=</span> ${money(A1)}`)}</p>
                 <p class="mb-0">${math(`A<sub>2</sub> <span class="op">=</span> ${tidy(r, 8)} <span class="op">×</span> ${tidy(A1)} <span class="op">+</span> ${tidy(d)} <span class="op">=</span> ${money(A2)}`, `A sub 2 equals ${round(A2, 2)}`)}</p>` },
           { t: 'Sanity-check',
-            h: `<p class="mb-0">Two deposits total ${money(2 * d, 0)}, and ${money(A2)} is slightly more — the first deposit has earned one month of interest. The first deposit earns nothing in the month it is made, because it arrives at the <em>end</em> of that period.</p>` }
+            h: `<p class="mb-0">Two deposits total ${money(2 * d, 0)}, and ${money(A2)} is slightly more. The first deposit has earned one month of interest. The first deposit earns nothing in the month it is made, because it arrives at the <em>end</em> of that period.</p>` }
         ],
         answer: `${math(`A<sub>n+1</sub> <span class="op">=</span> ${tidy(r, 8)}A<sub>n</sub> <span class="op">+</span> ${tidy(d)}`)}, ${math('A<sub>0</sub> <span class="op">=</span> 0')}; ${math('A<sub>2</sub>')} = ${money(A2)}.`,
         pitfall: 'Using the loan recurrence (− d) for a savings plan. Deposits add to the balance.',
@@ -283,7 +283,7 @@ export const finance2 = [
           { t: 'Substitute',
             h: `<p>${math(`A<sub>FV</sub> <span class="op">=</span> ${tidy(d)} <span class="op">×</span> ${frac(`(1 <span class="op">+</span> ${tidy(i, 8)})<sup>${n}</sup> <span class="op">−</span> 1`, tidy(i, 8))} <span class="op">=</span> ${money(A)}`, `A F V equals ${round(A, 2)}`)}</p>` },
           { t: 'Check it is plausible',
-            h: `<p class="mb-0">Deposits alone total ${math(`${n} <span class="op">×</span> ${money(d, 0)} <span class="op">=</span> ${money(d * n, 0)}`)}, and ${money(A)} exceeds that — as it must, since the balance also earns interest.</p>` }
+            h: `<p class="mb-0">Deposits alone total ${math(`${n} <span class="op">×</span> ${money(d, 0)} <span class="op">=</span> ${money(d * n, 0)}`)}, and ${money(A)} exceeds that, as it must, since the balance also earns interest.</p>` }
         ],
         answer: `Fund value ≈ ${money(A)}.`,
         pitfall: 'Using the present-value formula for a savings plan. PV discounts backwards; FV accumulates forwards.',
@@ -341,7 +341,7 @@ export const finance2 = [
           { t: 'Recognise the perpetuity', formulaId: 'perpetuity',
             h: `<p>The payment must never reduce the principal, so each period's payment is exactly that period's interest: ${math(`A <span class="op">=</span> ${frac('d', 'i')}`)}.</p>` },
           { t: 'Match the rate to the payment period',
-            h: `<p>${math(`i <span class="op">=</span> ${frac(tidy(annual / 100), f.k)} <span class="op">=</span> ${tidy(i, 8)}`)} per ${f.period} — the same period as the payment.</p>` },
+            h: `<p>${math(`i <span class="op">=</span> ${frac(tidy(annual / 100), f.k)} <span class="op">=</span> ${tidy(i, 8)}`)} per ${f.period}. The same period as the payment.</p>` },
           { t: 'Substitute',
             h: `<p class="mb-0">${math(`A <span class="op">=</span> ${frac(tidy(d), tidy(i, 8))} <span class="op">=</span> ${money(A)}`, `A equals ${d} over ${round(i, 8)} equals ${round(A, 2)}`)}</p>` }
         ],

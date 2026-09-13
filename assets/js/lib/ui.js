@@ -44,14 +44,29 @@ export function markCurrentNav() {
 
 /* ---------------- Render helpers ---------------- */
 
-/** A formula-book entry rendered as an inline chip, linked to the formula sheet. */
+/**
+ * A formula-book entry rendered as an inline chip. The chip expands to show what
+ * each letter stands for, so a student meeting the formula mid-question does not
+ * have to leave the page to find out what r or i means.
+ */
 export function formulaChip(id) {
   const f = FORMULA_BY_ID[id];
   if (!f) return '';
-  return `<a class="formula-chip" href="formulas.html#f-${f.id}">
-    <span class="formula-chip__label">Formula book</span>
-    <span aria-label="${escapeHtml(f.aria)}">${f.expr}</span>
-  </a>`;
+  const expr = `<span class="formula-chip__label">Formula book</span>
+    <span aria-label="${escapeHtml(f.aria)}">${f.expr}</span>`;
+  if (!f.symbols || !f.symbols.length) {
+    return `<a class="formula-chip" href="formulas.html#f-${f.id}">${expr}</a>`;
+  }
+  return `<details class="formula-chip formula-chip--expandable">
+    <summary>${expr}</summary>
+    <div class="formula-chip__body">
+      <p class="formula-item__symbols-title">What the letters mean</p>
+      <dl class="symbols">
+        ${f.symbols.map(x => `<div><dt>${escapeHtml(x.s)}</dt><dd>${escapeHtml(x.m)}</dd></div>`).join('')}
+      </dl>
+      <p class="mb-0"><a href="formulas.html#f-${f.id}">Open on the formula sheet</a></p>
+    </div>
+  </details>`;
 }
 
 export function tierPill(tier) {

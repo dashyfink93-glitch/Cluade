@@ -12,7 +12,7 @@ const EDGE_SET = [
   ['A', 'B'], ['A', 'C'], ['B', 'C'], ['B', 'D'], ['C', 'D'], ['C', 'E'], ['D', 'F'], ['E', 'F']
 ];
 
-/** Inline SVG of a weighted undirected network. Decorative — the table carries the data. */
+/** Inline SVG of a weighted undirected network. Decorative. The table carries the data. */
 function networkSvg(edges, highlight = []) {
   const hi = new Set(highlight.map(e => [e.a, e.b].sort().join('')));
   const lines = edges.map(e => {
@@ -76,7 +76,7 @@ export const graphsNetworks = [
           { t: 'Rearrange for the unknown',
             h: `<p>${math(rearranged)}</p>` },
           { t: 'Evaluate',
-            h: `<p class="mb-0">${math(`${unknown} <span class="op">=</span> ${value}`)}${unknown === 'f' ? ' — and remember that count includes the infinite region outside the graph.' : '.'}</p>` }
+            h: `<p class="mb-0">${math(`${unknown} <span class="op">=</span> ${value}`)}${unknown === 'f' ? ', and remember that count includes the infinite region outside the graph.' : '.'}</p>` }
         ],
         answer: `${value} ${nameOf}.`,
         pitfall: 'Forgetting the outside face. A planar drawing always has one more face than the enclosed regions you can see.',
@@ -105,7 +105,7 @@ export const graphsNetworks = [
           { t: 'Add the degrees',
             h: `<p>${math(`${degs.join(' <span class="op">+</span> ')} <span class="op">=</span> ${sum}`, `${degs.join(' plus ')} equals ${sum}`)}</p>` },
           { t: 'Halve the total',
-            h: `<p class="mb-0">${math(`e <span class="op">=</span> ${frac(sum, 2)} <span class="op">=</span> ${e}`)} edges. ${degs.filter(d => d % 2).length} vertices have odd degree — always an even number of them, which is a useful check.</p>` }
+            h: `<p class="mb-0">${math(`e <span class="op">=</span> ${frac(sum, 2)} <span class="op">=</span> ${e}`)} edges. ${degs.filter(d => d % 2).length} vertices have odd degree. Always an even number of them, which is a useful check.</p>` }
         ],
         answer: `${e} edges.`,
         pitfall: 'Reporting the sum of degrees as the number of edges. Halve it.',
@@ -130,14 +130,14 @@ export const graphsNetworks = [
       } while (true);
       const odd = degs.filter(d => d % 2).length;
       const correct = {
-        0: 'It has an Eulerian circuit — a closed trail using every edge exactly once.',
-        2: 'It is semi-Eulerian — an open Eulerian trail exists, starting and finishing at the two odd vertices.',
+        0: 'It has an Eulerian circuit. A closed trail using every edge exactly once.',
+        2: 'It is semi-Eulerian. An open Eulerian trail exists, starting and finishing at the two odd vertices.',
         4: 'It is neither Eulerian nor semi-Eulerian.'
       }[odd];
       const options = rng.shuffle([
         correct,
-        'It has an Eulerian circuit — a closed trail using every edge exactly once.',
-        'It is semi-Eulerian — an open Eulerian trail exists, starting and finishing at the two odd vertices.',
+        'It has an Eulerian circuit. A closed trail using every edge exactly once.',
+        'It is semi-Eulerian. An open Eulerian trail exists, starting and finishing at the two odd vertices.',
         'It is neither Eulerian nor semi-Eulerian.'
       ].filter((v, i, arr) => arr.indexOf(v) === i));
       return {
@@ -155,7 +155,7 @@ export const graphsNetworks = [
                   <li>4 or more odd vertices → neither</li>
                 </ul>` },
           { t: 'State the conclusion',
-            h: `<p class="mb-0">${correct}${odd === 2 ? ' The start and finish must be the two odd vertices — no other choice works.' : ''}</p>` },
+            h: `<p class="mb-0">${correct}${odd === 2 ? ' The start and finish must be the two odd vertices. No other choice works.' : ''}</p>` },
           { t: 'Keep Eulerian and Hamiltonian apart',
             h: `<p class="mb-0">This test concerns <strong>edges</strong>. A Hamiltonian cycle visits every <strong>vertex</strong> once, and there is no comparable degree test for it.</p>` }
         ],
@@ -195,7 +195,7 @@ export const graphsNetworks = [
             h: `<p class="mb-0">Every entry is counted twice in the whole matrix, so ${math(`e <span class="op">=</span> ${frac('sum of all entries', '2')} <span class="op">=</span> ${frac(edges * 2, 2)} <span class="op">=</span> ${edges}`)}.</p>` }
         ],
         answer: `deg(${labels[target]}) = ${deg}; the graph has ${edges} edges.`,
-        pitfall: 'On a matrix with loops, a loop adds 2 to the degree — the diagonal entry is not simply added once.',
+        pitfall: 'On a matrix with loops, a loop adds 2 to the degree. The diagonal entry is not simply added once.',
         check: { type: 'number', value: deg, tol: 0.01, label: `degree of ${labels[target]}` }
       };
     }
@@ -222,10 +222,10 @@ export const graphsNetworks = [
           { t: 'Compare the totals',
             h: `<p>The smallest total is ${math(`${best.weight}`)}, on route <strong>${best.route.join('–')}</strong>.</p>` },
           { t: 'Check no shorter route was missed',
-            h: `<p>Any route not listed either revisits a vertex — which can only add weight — or exceeds ${best.weight} at its first few edges.</p>` },
+            h: `<p>Any route not listed either revisits a vertex, which can only add weight, or exceeds ${best.weight} at its first few edges.</p>` },
           { t: 'State route and weight together',
             h: `<p class="mb-0">Shortest path: <strong>${best.route.join('–')}</strong>, total <strong>${best.weight} minutes</strong>.</p>
-                <p class="text-muted mb-0">Both parts are required — a number without its route does not answer the question.</p>` }
+                <p class="text-muted mb-0">Both parts are required. A number without its route does not answer the question.</p>` }
         ],
         answer: `${best.route.join('–')}, total ${best.weight} minutes.`,
         pitfall: 'Giving the distance without the route, or stopping at the first route that "looks" short.',
@@ -255,16 +255,16 @@ export const graphsNetworks = [
         steps: [
           { t: 'Start from the definitions',
             h: `<ul class="mb-0">
-                  <li><strong>Walk</strong> — any sequence of connected edges; repeats allowed.</li>
-                  <li><strong>Trail</strong> — a walk with no repeated <em>edge</em>.</li>
-                  <li><strong>Path</strong> — a trail with no repeated <em>vertex</em>.</li>
-                  <li><strong>Circuit</strong> — a closed trail (starts and ends at the same vertex).</li>
-                  <li><strong>Cycle</strong> — a closed path: no repeats other than the shared start and finish.</li>
+                  <li><strong>Walk</strong>. Any sequence of connected edges; repeats allowed.</li>
+                  <li><strong>Trail</strong>. A walk with no repeated <em>edge</em>.</li>
+                  <li><strong>Path</strong>. A trail with no repeated <em>vertex</em>.</li>
+                  <li><strong>Circuit</strong>. A closed trail (starts and ends at the same vertex).</li>
+                  <li><strong>Cycle</strong>. A closed path: no repeats other than the shared start and finish.</li>
                 </ul>` },
           { t: 'Check repeats in this sequence',
             h: `<p>Here, ${c.desc}.</p>` },
           { t: 'Choose the most precise term',
-            h: `<p class="mb-0">The sequence is <strong>${c.ans}</strong>. Every path is also a trail and a walk — the mark is for the most specific correct term.</p>` }
+            h: `<p class="mb-0">The sequence is <strong>${c.ans}</strong>. Every path is also a trail and a walk. The mark is for the most specific correct term.</p>` }
         ],
         answer: `It is ${c.ans}.`,
         pitfall: 'Trails restrict edges; paths restrict vertices. Mixing the two is the usual slip.',
@@ -297,7 +297,7 @@ export const graphsNetworks = [
       const verdict = odd === 0
         ? `Yes. Every vertex has even degree, so an Eulerian circuit exists: the crew can start anywhere, cover ${s.edgeThing} exactly once, and finish back at the start.`
         : odd === 2
-          ? `Partly. With exactly two odd vertices (${oddList.join(' and ')}) an open Eulerian trail exists, so ${s.edgeThing} can be covered once — but only by starting at one odd vertex and finishing at the other, not by returning to the depot.`
+          ? `Partly. With exactly two odd vertices (${oddList.join(' and ')}) an open Eulerian trail exists, so ${s.edgeThing} can be covered once, but only by starting at one odd vertex and finishing at the other, not by returning to the depot.`
           : `No. With ${odd} odd vertices (${oddList.join(', ')}) neither an Eulerian circuit nor an open Eulerian trail exists, so some ${s.unit} must be repeated.`;
       return {
         prompt: `<p>${s.who.charAt(0).toUpperCase() + s.who.slice(1)} must travel along ${s.edgeThing} in a connected network of ${n} locations, ideally without repeating any.</p>
@@ -306,18 +306,18 @@ export const graphsNetworks = [
         formulaIds: ['degree-sum'],
         steps: [
           { t: 'Identify which object the route must cover',
-            h: `<p>The crew travels along ${s.edgeThing} — the <strong>edges</strong>. That makes this an <strong>Eulerian</strong> question, not a Hamiltonian one.</p>` },
+            h: `<p>The crew travels along ${s.edgeThing}. The <strong>edges</strong>. That makes this an <strong>Eulerian</strong> question, not a Hamiltonian one.</p>` },
           { t: 'Count the odd-degree vertices',
             h: `<p>Degrees ${degs.join(', ')} give <strong>${odd}</strong> odd vertices${oddList.length ? ` (${oddList.join(', ')})` : ''}.</p>` },
           { t: 'Apply the Eulerian conditions',
             h: `<p>${verdict}</p>` },
           { t: 'Size the network', formulaId: 'degree-sum',
-            h: `<p>${math(`e <span class="op">=</span> ${frac('∑ degree', '2')} <span class="op">=</span> ${frac(e * 2, 2)} <span class="op">=</span> ${e}`)} — an ideal route would consist of exactly ${e} traversals${odd > 2 ? `, and any feasible route here must exceed that` : ''}.</p>` },
+            h: `<p>${math(`e <span class="op">=</span> ${frac('∑ degree', '2')} <span class="op">=</span> ${frac(e * 2, 2)} <span class="op">=</span> ${e}`)}. An ideal route would consist of exactly ${e} traversals${odd > 2 ? `, and any feasible route here must exceed that` : ''}.</p>` },
           { t: 'Separate the Hamiltonian question',
             h: `<p class="mb-0">Visiting ${s.vertexThing} exactly once is a <strong>Hamiltonian</strong> problem, about vertices rather than edges. There is no degree test for it: candidate cycles have to be constructed and compared. A graph can be Eulerian and not Hamiltonian, or the reverse.</p>` }
         ],
         answer: verdict,
-        pitfall: 'Answering the Eulerian question with a Hamiltonian test, or assuming that "no Eulerian circuit" means no route at all — it only means some edges must be repeated.',
+        pitfall: 'Answering the Eulerian question with a Hamiltonian test, or assuming that "no Eulerian circuit" means no route at all. It only means some edges must be repeated.',
         check: { type: 'number', value: e, tol: 0.01, label: 'number of edges in the network' }
       };
     }
@@ -346,7 +346,7 @@ export const networks1 = [
             h: `<p class="mb-0">${math(`${v - 1 + extra} <span class="op">−</span> ${v - 1} <span class="op">=</span> ${extra}`)} edges must be removed, each one breaking a cycle without disconnecting the graph.</p>` }
         ],
         answer: `A spanning tree has ${v - 1} edges; ${extra} edges must be removed.`,
-        pitfall: 'A tree cannot contain a cycle — a cycle would let you delete an edge and still stay connected, so the graph would not be minimal.',
+        pitfall: 'A tree cannot contain a cycle. A cycle would let you delete an edge and still stay connected, so the graph would not be minimal.',
         check: { type: 'number', value: v - 1, tol: 0.01, label: 'edges in a spanning tree' }
       };
     }
@@ -365,7 +365,7 @@ export const networks1 = [
         formulaIds: ['float'],
         steps: [
           { t: 'Select the rule', formulaId: 'float',
-            h: `<p>${math('float <span class="op">=</span> LST <span class="op">−</span> EST')} — the gap between the latest and earliest times the activity can start.</p>` },
+            h: `<p>${math('float <span class="op">=</span> LST <span class="op">−</span> EST')}. The gap between the latest and earliest times the activity can start.</p>` },
           { t: 'Substitute',
             h: `<p>${math(`float <span class="op">=</span> ${lst} <span class="op">−</span> ${est} <span class="op">=</span> ${fl}`, `float equals ${lst} minus ${est} equals ${fl}`)} days</p>` },
           { t: 'Interpret',
@@ -373,7 +373,7 @@ export const networks1 = [
               ? 'Zero float means the activity is <strong>critical</strong>: any delay at all pushes out the whole project, and it lies on the critical path.'
               : `The activity can start up to <strong>${fl} days</strong> late without delaying the project. It is <strong>not</strong> on the critical path.`}</p>` }
         ],
-        answer: `Float = ${fl} days${fl === 0 ? ' — the activity is critical' : ''}.`,
+        answer: `Float = ${fl} days${fl === 0 ? '. The activity is critical' : ''}.`,
         pitfall: 'Float is a property of a single activity. Delaying one activity by its full float can consume float shared with others.',
         check: { type: 'number', value: fl, tol: 0.01, label: 'float (days)' }
       };
@@ -435,7 +435,7 @@ export const networks1 = [
           { t: 'Sort the edges and take them in order',
             h: `<p>Cheapest first, skipping any edge that would close a cycle:</p>
                 ${table(['Edge', 'Weight', 'Action'], sorted.map(e => [
-                  `${e.a}–${e.b}`, e.w, chosen.has(e.a + e.b) ? 'add' : 'skip — creates a cycle or not needed'
+                  `${e.a}–${e.b}`, e.w, chosen.has(e.a + e.b) ? 'add' : 'skip. Creates a cycle or not needed'
                 ]))}` },
           { t: 'Read off the tree',
             h: `<p>Chosen edges: <strong>${mst.edges.map(e => `${e.a}–${e.b}`).join(', ')}</strong>. That is ${mst.edges.length} edges connecting all six sites with no cycle.</p>
@@ -489,7 +489,7 @@ export const networks1 = [
             h: `<p class="mb-0">Activity ${target.name} has ${math(`float <span class="op">=</span> ${target.lst} <span class="op">−</span> ${target.est} <span class="op">=</span> ${target.float}`)} days${target.float === 0 ? ', so it is critical' : ''}.</p>` }
         ],
         answer: `Duration ${cp.duration} days; critical path ${cp.critical.join('–')}; float of ${target.name} = ${target.float} days.`,
-        pitfall: 'On the backward scan, LFT comes from the minimum of the successors\' LSTs — taking the maximum quietly destroys the critical path.',
+        pitfall: 'On the backward scan, LFT comes from the minimum of the successors\' LSTs. Taking the maximum quietly destroys the critical path.',
         check: { type: 'number', value: cp.duration, tol: 0.01, label: 'minimum project duration (days)' }
       };
     }
@@ -517,7 +517,7 @@ export const networks1 = [
               : 'Project duration is set by the critical path, and this activity is not on it. Shortening it only increases its own slack.'}</p>` },
           { t: 'Work out the new duration',
             h: `<p>${effFloat === 0
-              ? `Cutting ${cut} days from a critical activity reduces the project by up to <strong>${cut} days</strong> — but only until another path becomes the longest, at which point the saving stops.`
+              ? `Cutting ${cut} days from a critical activity reduces the project by up to <strong>${cut} days</strong>, but only until another path becomes the longest, at which point the saving stops.`
               : `Duration is <strong>unchanged</strong>. The activity's float simply rises from ${effFloat} to ${effFloat + cut} days.`}</p>` },
           { t: 'State the conclusion',
             h: `<p class="mb-0">${effFloat === 0
@@ -526,8 +526,8 @@ export const networks1 = [
         ],
         answer: effFloat === 0
           ? `Up to ${cut} days shorter, subject to another path becoming critical.`
-          : 'No change — the activity is not on the critical path; its float rises instead.',
-        pitfall: 'Assuming any speed-up helps. Only critical activities control the project duration — and only until the critical path shifts.',
+          : 'No change. The activity is not on the critical path; its float rises instead.',
+        pitfall: 'Assuming any speed-up helps. Only critical activities control the project duration, and only until the critical path shifts.',
         check: { type: 'open' }
       };
     }
@@ -550,7 +550,7 @@ export const networks2 = [
         formulaIds: ['max-flow-min-cut'],
         steps: [
           { t: 'Recall which arcs count',
-            h: `<p>A cut's capacity counts only the arcs directed <strong>forward</strong> across it — from the source side towards the sink side. Backward arcs contribute nothing.</p>` },
+            h: `<p>A cut's capacity counts only the arcs directed <strong>forward</strong> across it. From the source side towards the sink side. Backward arcs contribute nothing.</p>` },
           { t: 'Add the forward capacities',
             h: `<p>${math(`${fwd.join(' <span class="op">+</span> ')} <span class="op">=</span> ${cap}`, `${fwd.join(' plus ')} equals ${cap}`)}</p>` },
           { t: 'Discard the backward arc',
@@ -645,7 +645,7 @@ export const networks2 = [
         formulaIds: [],
         steps: [
           { t: 'Count the possibilities',
-            h: `<p>With three staff and three tasks there are ${math('3! <span class="op">=</span> 6')} allocations — few enough to check every one.</p>` },
+            h: `<p>With three staff and three tasks there are ${math('3! <span class="op">=</span> 6')} allocations. Few enough to check every one.</p>` },
           { t: 'Total each allocation',
             h: table(['Allocation', 'Sum', 'Total'], rows) },
           { t: 'Select the minimum',
@@ -681,7 +681,7 @@ export const networks2 = [
             h: `<p>The largest profit is <strong>${largest}</strong>.</p>` },
           { t: 'Subtract every entry from it',
             h: `${table(['', 'Region 1', 'Region 2', 'Region 3'], names.map((n, i) => [n, ...conv[i]]))}
-                <p class="mb-0">The best original entry becomes 0 — the cheapest cell in the converted table.</p>` },
+                <p class="mb-0">The best original entry becomes 0. The cheapest cell in the converted table.</p>` },
           { t: 'Solve and convert back',
             h: `<p class="mb-0">Minimising the converted table gives ${best.perm.map((c, r) => `${names[r]}→Region ${c + 1}`).join(', ')}. Read the total from the <strong>original</strong> table: ${math(`${best.perm.map((c, r) => m[r][c]).join(' <span class="op">+</span> ')} <span class="op">=</span> ${best.total}`)}, i.e. $${best.total} 000.</p>` }
         ],

@@ -24,6 +24,7 @@ const MODULES = [
   'assets/js/lib/rand.js',
   'assets/js/lib/fmt.js',
   'assets/js/lib/solvers.js',
+  'assets/js/lib/charts.js',
   'assets/js/lib/store.js',
   'assets/js/data/formulas.js',
   'assets/js/data/topics.js',

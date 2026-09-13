@@ -2,7 +2,7 @@
  * Registry for every question generator.
  *
  * A generator is a pure function of a seeded Rng, so `generate(id, seed)` always
- * rebuilds exactly the same question — which is what makes a question shareable
+ * rebuilds exactly the same question, which is what makes a question shareable
  * by URL and re-checkable later.
  */
 import { Rng, randomSeed } from '../../lib/rand.js';

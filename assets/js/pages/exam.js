@@ -69,7 +69,7 @@ function responseFieldHtml(q, i) {
     </ul>`;
   }
   return `<div class="field" style="max-width:340px">
-    <label for="response">Your answer &mdash; ${escapeHtml(q.check.label)}</label>
+    <label for="response">Your answer: ${escapeHtml(q.check.label)}</label>
     <input type="text" inputmode="decimal" id="response" name="response" autocomplete="off"
       value="${escapeHtml(String(responses[i]))}">
   </div>`;
@@ -105,7 +105,7 @@ function renderQuestion() {
       <form id="response-form">${responseFieldHtml(q, current)}</form>
       <p class="text-muted mb-0"><small>The formula sheet is open in the
         <a href="formulas.html" target="_blank" rel="noopener">Formula sheet</a> tab. Working is not marked here &mdash;
-        only the final answer &mdash; so still write it out on paper.</small></p>
+        only the final answer, so still write it out on paper.</small></p>
     </article>
 
     <div class="flex-row">
@@ -206,7 +206,7 @@ function renderResult(result, time) {
         Read the lesson, then drill that topic in the generator before sitting another paper.</p>
     </div>` : `<div class="callout callout--tip mt-2">
       <p class="callout__title">Full marks</p>
-      <p class="mb-0">Nothing to revise from this paper. Sit another one &mdash; the questions will be different.</p>
+      <p class="mb-0">Nothing to revise from this paper. Sit another one. The questions will be different.</p>
     </div>`}
 
     <h3 class="mt-3">Every question</h3>

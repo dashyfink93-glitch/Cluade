@@ -494,7 +494,7 @@ export const REVISION_CYCLE = [
 
 /** How to study, from the booklet's six-step cycle. */
 export const STUDY_CYCLE = [
-  { title: 'Diagnose', text: 'Tick only the skills you can complete without help. Be honest — the list is for you.' },
+  { title: 'Diagnose', text: 'Tick only the skills you can complete without help. Be honest. The list is for you.' },
   { title: 'Rebuild', text: 'Read the key ideas and cover the worked example before trying it yourself.' },
   { title: 'Practise', text: 'Move from Skill to Apply to Challenge. Show mathematical reasoning, not just a number.' },
   { title: 'Test', text: 'Attempt a mixed set against a timer with no notes but the formula sheet.' },

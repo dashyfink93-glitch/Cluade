@@ -18,7 +18,7 @@ document.getElementById('jump-nav').innerHTML = FORMULA_SECTIONS
   .map(s => `<a href="#s-${s.id}">${escapeHtml(s.title)}</a>`).join('');
 
 document.getElementById('formula-counts').innerHTML =
-  `<strong>${OFFICIAL.length}</strong> formulas are printed on the official QCAA sheet &mdash; every one of them is here.
+  `<strong>${OFFICIAL.length}</strong> formulas are printed on the official QCAA sheet. Every one of them is here.
    A further <strong>${DERIVED.length}</strong> standard results the syllabus expects you to know, but which the sheet does
    <em>not</em> print, are marked <span class="pill pill--derived">derived</span>.`;
 
@@ -46,6 +46,18 @@ function haystack(f) {
   return stem(`${f.name} ${f.use} ${f.aria} ${section} ${topics}`);
 }
 
+/** What each letter in the formula actually stands for. */
+function symbolsHtml(f) {
+  if (!f.symbols || !f.symbols.length) return '';
+  return `<div class="formula-item__symbols">
+    <p class="formula-item__symbols-title">What the letters mean</p>
+    <dl class="symbols">
+      ${f.symbols.map(x => `<div>
+        <dt>${escapeHtml(x.s)}</dt><dd>${escapeHtml(x.m)}</dd></div>`).join('')}
+    </dl>
+  </div>`;
+}
+
 function itemHtml(f) {
   const links = f.topics.map(id => {
     const t = TOPIC_BY_ID[id];
@@ -58,6 +70,7 @@ function itemHtml(f) {
     </h3>
     <p class="formula-item__expr"><span aria-label="${escapeHtml(f.aria)}">${f.expr}</span></p>
     <p class="formula-item__use">${escapeHtml(f.use)}</p>
+    ${symbolsHtml(f)}
     ${links ? `<div class="formula-item__links">${links}</div>` : ''}
   </article>`;
 }
@@ -108,7 +121,7 @@ function highlightTarget(retry = true) {
   if (!id || !id.startsWith('f-')) return;
   const el = document.getElementById(id);
   if (!el) {
-    // The entry exists but the search or scope filter has hidden it — reset and retry.
+    // The entry exists but the search or scope filter has hidden it. Reset and retry.
     if (retry && (search.value || scope !== 'all')) {
       search.value = '';
       scope = 'all';

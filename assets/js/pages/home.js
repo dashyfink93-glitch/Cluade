@@ -44,4 +44,4 @@ document.querySelector('.progress').setAttribute('aria-label',
   `Mastery targets ticked: ${ticked} of ${totalTargets}, ${pctDone} per cent`);
 document.getElementById('progress-label').textContent = ticked
   ? `${ticked} of ${totalTargets} mastery targets ticked (${pctDone}%). Saved on this device only.`
-  : 'Tick mastery targets as you go — they are saved on this device.';
+  : 'Tick mastery targets as you go. They are saved on this device.';
