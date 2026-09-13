@@ -103,7 +103,13 @@ export function announce(message) {
   setTimeout(() => { live.textContent = message; }, 40);
 }
 
+/** Promote the webfont stylesheet from print to all, once the page is up. */
+function enableWebfonts() {
+  for (const link of document.querySelectorAll('link[data-fonts]')) link.media = 'all';
+}
+
 export function boot() {
+  enableWebfonts();
   initTheme();
   markCurrentNav();
 }

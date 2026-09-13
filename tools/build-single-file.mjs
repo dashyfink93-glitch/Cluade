@@ -119,11 +119,19 @@ const controllers = PAGES.map(p => {
 
 /* The page's webfonts. Without these the single-file build silently falls back
    to system faces and stops looking like the design. fonts.googleapis.com and
-   fonts.gstatic.com are both on the artifact CSP allowlist. */
-const fontLinks = (indexHtml.match(/<link[^>]+fonts\.g(?:oogleapis|static)\.com[^>]*>/g) || [])
-  .concat(indexHtml.match(/<link[^>]+rel="preconnect"[^>]*>/g) || [])
-  .filter((v, i, a) => a.indexOf(v) === i)
-  .join('\n');
+   fonts.gstatic.com are both on the artifact CSP allowlist.
+   Only the data-fonts link is carried: it loads as print media so it never
+   blocks the first paint, and boot() promotes it to all. The page's <noscript>
+   copy is deliberately left behind and re-emitted here, so it cannot end up
+   outside a <noscript> and become render-blocking again. */
+const fontStylesheet = (indexHtml.match(/<link[^>]+data-fonts[^>]*>/g) || [])[0] || '';
+const preconnects = (indexHtml.match(/<link[^>]+rel="preconnect"[^>]*>/g) || []).join('\n');
+const fontHref = (fontStylesheet.match(/href="([^"]+)"/) || [])[1] || '';
+const fontLinks = [
+  preconnects,
+  fontStylesheet,
+  fontHref ? `<noscript><link rel="stylesheet" href="${fontHref}"></noscript>` : ''
+].filter(Boolean).join('\n');
 
 const css = read('assets/css/style.css');
 const title = 'General Maths Hub';
@@ -204,4 +212,5 @@ for (const bad of ['index.html', 'topics.html', 'practice.html', 'formulas.html'
 }
 if (out.indexOf('<title>') > 8192) console.warn('  ! <title> is beyond the first 8KB');
 if (!out.includes('fonts.googleapis.com')) console.warn('  ! no webfont link — the bundle will fall back to system fonts');
-else console.log('  webfonts linked');
+else if (!out.includes('data-fonts')) console.warn('  ! webfont link is render-blocking (missing data-fonts)');
+else console.log('  webfonts linked, non-blocking');

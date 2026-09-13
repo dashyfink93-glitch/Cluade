@@ -164,6 +164,18 @@ nothing to build.
 document. Email it, drop it on a USB stick, or host it anywhere that serves one
 file. It works offline once loaded.
 
+## Webfonts
+
+The type is Fraunces, Public Sans and IBM Plex Mono from Google Fonts. The
+stylesheet is linked with `media="print"` and promoted to `all` by `boot()`, so
+it never blocks the first paint, with a `<noscript>` copy for the JS-off case.
+Every stack ends in real local faces, so a blocked or slow font CDN (common on
+school networks) costs the reader nothing.
+
+Measured with both font hosts blocked in the browser: DOMContentLoaded went from
+12.5 s to 131 ms, and the page renders in the fallback faces with no layout
+change beyond the type itself.
+
 ## Accessibility
 
 The site is built to WCAG 2.1 AA and audited with `axe-core` across every page,

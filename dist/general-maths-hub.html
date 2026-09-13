@@ -1,7 +1,8 @@
 <title>General Maths Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" media="print" data-fonts>
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap"></noscript>
 <style>
 /* ==========================================================================
    General Maths Hub — QCAA General Mathematics Units 3 & 4
@@ -3052,7 +3053,13 @@ function announce(message) {
   live.textContent = '';
   setTimeout(() => { live.textContent = message; }, 40);
 }
+
+/** Promote the webfont stylesheet from print to all, once the page is up. */
+function enableWebfonts() {
+  for (const link of document.querySelectorAll('link[data-fonts]')) link.media = 'all';
+}
 function boot() {
+  enableWebfonts();
   initTheme();
   markCurrentNav();
 }
